@@ -51,6 +51,8 @@ module.exports = {
     publicPath: '/dist/',
   },
 
+  target: 'web',
+
   resolve: {
     extensions: [
       '.js',
@@ -197,5 +199,6 @@ module.exports = {
         compress: env === 'prod',
       },
     }),
+
   ],
 };
