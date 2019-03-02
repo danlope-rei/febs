@@ -1,6 +1,6 @@
 {
   "name": "@rei/febs",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "REI's next-gen front-end build system.",
   "main": "index.js",
   "directories": {
@@ -53,8 +53,8 @@
     "file-loader": "^0.11.2",
     "fs-extra": "^4.0.3",
     "istanbul": "~0.4.5",
-    "less": "^3.0.2",
-    "less-loader": "^4.1.0",
+    "less": "^2.3.1",
+    "less-loader": "~4.0.6",
     "memory-fs": "^0.4.1",
     "mocha": "^5.2.0",
     "node-sass": "^4.9.3",
