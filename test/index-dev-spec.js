@@ -55,7 +55,7 @@ describe('FEBS Development Tests', function () {
           app: lib.absPath('fixtures/src/main-es2015-syntax-errors.js'),
         },
       })).then((o) => {
-        assert.ok(o.stats.compilation.errors[0].message.includes('Parsing error'));
+        assert.ok(o.stats.compilation.errors[0].message.includes('Unexpected token'));
       });
     });
 
@@ -96,7 +96,7 @@ describe('FEBS Development Tests', function () {
           app: lib.absPath('fixtures/src/main-riot-syntax-error.js'),
         },
       })).then((o) => {
-        assert.ok(o.stats.compilation.errors[1].message.includes('Unexpected token'));
+        assert.ok(o.stats.compilation.errors[0].message.includes('Unexpected token'));
       });
     });
   });
@@ -130,16 +130,6 @@ describe('FEBS Development Tests', function () {
         },
       })).then((o) => {
         assert.ok(o.stats.compilation.errors[0].message.includes('SyntaxError'));
-      });
-    });
-
-    it('detects Vue lint errors', async function () {
-      await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-vue-lint-error.js'),
-        },
-      })).then((o) => {
-        assert.ok(o.stats.compilation.errors[0].message.includes('Expected 1 space'));
       });
     });
   });

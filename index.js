@@ -158,15 +158,6 @@ module.exports = function init(conf = {}) {
       };
     }
 
-    // If only lint errors, return 0 (success), i.e., don't fail the build.
-    if (!lib.isSyntaxParseOnlyErrors(stats)) {
-      return {
-        err,
-        stats,
-        exitCode: 0,
-      };
-    }
-
     // If dev mode, do not exit as it will kill watcher.
     if (process.env.NODE_ENV === 'dev') {
       return {
