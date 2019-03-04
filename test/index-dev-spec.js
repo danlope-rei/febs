@@ -118,8 +118,8 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(compiled.code[0].app[0].content.includes('var str = \'Hello world\''));
-      assert(!compiled.code[0].app[0].content.includes('const str = \'Hello world\''));
+      assert(compiled.code[0].app[0].content.includes('function helloWorld'));
+      assert(compiled.code[0].app[0].content.includes('var a = o.a'));
     });
 
     it('detects Vue JavaScript syntax errors', async function () {

@@ -63,9 +63,9 @@ module.exports = {
     ],
   },
 
-  devtool: env === 'dev' ?
-    'eval-source-map' : /* internal, cheap, fast */
-    'source-map' /* external */,
+  devtool: env === 'dev'
+    ? 'eval-source-map' /* internal, cheap, fast */
+    : 'source-map' /* external */,
 
   // Resolve loaders relative to rei-febs (as this will be a dependency of another module.)
   resolveLoader: {
@@ -83,6 +83,8 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
+            // Ignore client's .babelrc and use the .babelrc in @rei/febs.
+            babelrcRoots: [path.join(__dirname, '..')],
             cacheDirectory: path.resolve('./.babelcache'),
           },
         },
