@@ -16,15 +16,11 @@ const projectPath = process.cwd();
  *
  * Passed in at run or test time
  * @param conf.env The environment (dev or prod)
- *
- * Passed in at run-time
- * @param conf.command The command received from commander.
- *
+ * @param command The command from commander.
  * passed in at test-time
  * @param conf.fs The file system (passed in from unit tests.)
  */
-module.exports = function init(conf = {}) {
-  const { command } = conf;
+module.exports = function init(command, conf = {}) {
   let ssr = false;
 
   const febsConfigArg = conf;
