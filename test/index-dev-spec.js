@@ -155,7 +155,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      const manifestFile = path.resolve(compiled.options.output.path, 'manifest.json');
+      const manifestFile = path.resolve(compiled.options.output.path, 'febs-manifest.json');
       assert(fs.statSync(manifestFile).isFile());
 
       const manifestJson = getJsonFromFS(manifestFile);

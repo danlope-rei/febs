@@ -170,7 +170,9 @@ module.exports = {
       filename: env === 'dev' ? '[name].bundle.css' : '[name].bundle-[contenthash].css',
     }),
 
-    new ManifestPlugin(),
+    new ManifestPlugin({
+      fileName: 'febs-manifest.json',
+    }),
 
     new UglifyJsPlugin({
       sourceMap: env === 'prod',
