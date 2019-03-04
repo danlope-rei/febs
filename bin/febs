@@ -52,16 +52,6 @@ program
   });
 
 program
-  .command('init')
-  .description('Creates basic scaffolding for a new front-end build\n')
-  .action(() => {
-    // eslint-disable-next-line global-require
-    const febsInit = require('../febs-init.js');
-    febsInit();
-  });
-
-
-program
   .on('--help', () => {
     process.stdout.write(`  Examples:
         $ NODE_ENV=prod febs
