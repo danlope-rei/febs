@@ -4,15 +4,18 @@
 
 ## Summary
 
-`FEBS` is an extensible [Webpack](https://webpack.js.org/)-based [front-end build
-system](https://engineering.rei.com/frontend/the-rei-front-end-build-system.html) designed to be used by a community of front-end developers or a series of projects using a similar set of technologies in order to reduce duplicate effort on build configuration.
+`FEBS` is an extensible `webpack`-based [front-end build system](https://engineering.rei.com/frontend/the-rei-front-end-build-system.html) 
+designed to be used by a community of front-end developers or a series of projects using a similar set of technologies in order to reduce duplicate effort on build configuration.
 
 Its code falls into two categories
 
 ### [Build Features](#build-features)
 
-[JavaScript](#javascript) / [Style](#style), [Source Maps](#source-maps), [Live reloading](#live-reloading),
-[Code Watching](#code-watching), etc.
+* [JavaScript](#javascript)
+* [Style](#style)
+* [Source Maps](#source-maps)
+* [Live reloading](#live-reloading)
+* [Code Watching](#code-watching)
 
 ### [FEBS core](#febs-core)
 
@@ -21,8 +24,7 @@ Its code falls into two categories
 - Produces a [Build Manifest](#build-manifest) so you can insert assets on your page using an [Asset Injector](#asset-injector)
 
 Learn more about [REI's Front-End Build System ](https://engineering.rei.com/frontend/the-rei-front-end-build-system.html)
-by checking out the introductory post on the
-[REI Co-op Engineering blog](https://engineering.rei.com)
+by checking out the introductory post on the [REI Co-op Engineering blog](https://engineering.rei.com)
 
 ## Getting Started
 
@@ -34,7 +36,7 @@ by checking out the introductory post on the
 
 #### Assign build tasks
 
-FEBS exposes an executable named `febs` to be used within the scripts of your `package.json`
+FEBS exposes an executable named `febs` to be used within the scripts of your `package.json`, e.g:
 
     "scripts": {
       "build": "NODE_ENV=prod febs prod",
@@ -47,16 +49,6 @@ There is [some work](#23) to remove the requirement on `NODE_ENV` and give full
 respect to the second argument.
 
 #### Update or use [defaults](#default-configuration) to specify paths for the CSS and JS you want to compile and [run](#run)
-
-### Run
-
-`npm run build` - Uses the [Production build task](#production-build-task)
-
-`npm run dev` - Uses the [Development build task](#development-build-task)
-
-`npm run live-reload` - Uses the [Live reloading](#live-reloading) feature
-
-`npm run watch` - Uses the [Code watching](#live-reloading) feature
 
 See [Command-line Interface]() for more details and additional ways to run.
 
@@ -80,43 +72,46 @@ You can adjust these default configurations using the [febs configuration](#febs
 
 ### JavaScript
   - [Vue](https://vuejs.org/)
-  - [Riot](http://riotjs.com/) - [deprecated](#deprecation)
-
-@TODO: additional detail
+  - ES2015+ via [`@babel/preset-env`](https://babeljs.io/docs/en/babel-preset-env)
 
 ### Style
   - [Less](http://lesscss.org/) - [deprecated](#deprecation)
-  - PostCSS
-
-@TODO: additional detail
+  - [Sass/SCSS](https://sass-lang.com/)
+  - [PostCSS](https://github.com/postcss)
 
 ### Source Maps
-@TODO: additional detail
+Source maps are generated for your bundles via the following [`webpack` methods](https://webpack.js.org/configuration/devtool/):
+
+* dev:  `eval-source-map`
+* prod: `source-map`
 
 ### Linting
 As FEBS is responsible only for *building* your code, it does not provide for linting. You should 
 implement a linting step per your style guide as a separate npm task in your `package.json`.
 
 ### Code watching
-@TODO: additional detail
+To enable code watching, run:
+
+    febs dev --watch --no-dev-server
 
 ### Live reloading
 @TODO: additional detail
-  - [Sass/SCSS](https://sass-lang.com/)
-  - [PostCSS](https://github.com/postcss)
 
 ## FEBS Core
 
 ### Command-line interface
-@TODO: additional detail (npx tip)
+FEBS provides a simple command-line interface.
 
 ### Production and Development Builds
 
 #### Production Build Task
-@TODO: additional detail
+
+    npx febs --prod
 
 #### Development Build Task
-@TODO: additional detail
+
+    npx febs --dev
+    npx febs --dev -no-dev-server
 
 ### FEBS Configuration
 
@@ -161,17 +156,14 @@ Given the above example, FEBS will generate two bundles at the following paths:
 
 If you'd like to further configure FEBS, you can look at the [webpack overrides](#webpack-overrides)
 
-### Webpack Overrides
+### Adding `webpack` loaders
 
 FEBS uses `Webpack` to build and is providing a default Webpack configuration under the hood.
 
-You can override or create new configurations through webpack directly where necessary. If you
-think others might need the override please file a ticket or reach out for [support](#support).
-Where you can, attempt to avoid using this feature to reduce duplication of work.
-
-To customize your build, creating a `webpack.overrides.conf.js` at the root of your npm
-package. Anything that Webpack understands is fair game for the overrides file. Want to add a
-loader or a plugin?
+There may be cases where you need to add a loader for your build that isn't provided by default. 
+To do this, just create a `webpack.overrides.conf.js` with your loader in your project root. If 
+you think others might need the override please file a ticket or reach out for [support]
+(#support). Where you can, attempt to avoid using this feature to reduce duplication of work.
 
     // Webpack.overrides.conf.js
     module.exports = {
@@ -199,19 +191,18 @@ You can find out all of the Webpack defaults by reviewing the base
 
 ### Build Manifest
 
-A manifest.json is built to `./dist/<packageName>/manifest.json`. This is a
+A `febs-manifest.json` is built to `./dist/<packageName>/febs-manifest.json`. This is a
 mechanism to be used by an asset injector to insert assets onto a page.
 
 @TODO: Additional detail
 
 ### Asset Injector
 
-An asset injector uses a [manifest.json](#build-manifest) to insert production
+An asset injector uses a [febs-manifest.json](#build-manifest) to insert production
 assets into the markup of a webpage.
 
 See our example JavaScript implementation of the an asset injector. One could
-create one to be used by Thymleaf, Freemarker, JSP Tags, Vue, React,
-Mustache, Handlebars, etc.
+create one to be used by Thymeleaf, Freemarker, JSP Tags, Vue, React, Mustache, Handlebars, etc.
 
 @TODO: publish JavaScript implementation and asset pipeline architectural
 diagrams and relate to an "asset pipeline".
