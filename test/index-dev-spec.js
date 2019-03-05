@@ -67,39 +67,6 @@ describe('FEBS Development Tests', function () {
     });
   });
 
-  describe('Riot', function () {
-    it('compiles Riot tags', async function () {
-      const compiled = await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-riot.js'),
-        },
-      }));
-
-      assert(compiled.code[0].app[0].content.includes('coolcomponent'));
-    });
-
-    it('transpiles es2015+ Riot tags', async function () {
-      const compiled = await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-riot-with-es2015.js'),
-        },
-      }));
-
-      assert(compiled.code[0].app[0].content.includes('var coolVar = 0'));
-      assert(!compiled.code[0].app[0].content.includes('let coolVar = 0'));
-    });
-
-    it('detects Riot parse errors', async function () {
-      await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-riot-syntax-error.js'),
-        },
-      })).then((o) => {
-        assert.ok(o.stats.compilation.errors[0].message.includes('Unexpected token'));
-      });
-    });
-  });
-
   describe('Vue', function () {
     it('compiles Vue tags', async function () {
       const compiled = await compile(lib.createConf({

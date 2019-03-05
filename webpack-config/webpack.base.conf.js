@@ -78,7 +78,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|tag)$/,
+        test: /\.(js)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
@@ -88,11 +88,6 @@ module.exports = {
             cacheDirectory: path.resolve('./.babelcache'),
           },
         },
-      },
-      {
-        test: /\.tag$/,
-        exclude: /node_modules/,
-        loader: 'riot-tag-loader',
       },
       {
         test: /\.vue$/,
