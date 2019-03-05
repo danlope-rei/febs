@@ -1,5 +1,5 @@
 {
-  "extends": ["airbnb-base", "plugin:vue/recommended"],
+  "extends": ["airbnb-base"],
   "env": {
     "node": true,
     "mocha": true,

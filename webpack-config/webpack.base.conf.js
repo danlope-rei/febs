@@ -63,9 +63,9 @@ module.exports = {
     ],
   },
 
-  devtool: env === 'dev' ?
-    'eval-source-map' : /* internal, cheap, fast */
-    'source-map' /* external */,
+  devtool: env === 'dev'
+    ? 'eval-source-map' /* internal, cheap, fast */
+    : 'source-map' /* external */,
 
   // Resolve loaders relative to rei-febs (as this will be a dependency of another module.)
   resolveLoader: {
@@ -78,37 +78,16 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|tag)$/,
+        test: /\.js$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
+            // Ignore client's .babelrc and use the .babelrc in @rei/febs.
+            babelrcRoots: [path.join(__dirname, '..')],
             cacheDirectory: path.resolve('./.babelcache'),
           },
         },
-      },
-      {
-        enforce: 'pre',
-        test: /\.(js|vue)$/,
-        include: path.resolve('.'),
-        exclude: /node_modules/,
-        use: {
-          loader: 'eslint-loader',
-          options: {
-            configFile: path.resolve(__dirname, '..', '.eslintrc.json'),
-            // cache: true,
-            fix: false,
-            failOnWarning: false,
-            failOnError: false,
-            emitError: false,
-            emitWarning: false,
-          },
-        },
-      },
-      {
-        test: /\.tag$/,
-        exclude: /node_modules/,
-        loader: 'riot-tag-loader',
       },
       {
         test: /\.vue$/,
@@ -188,7 +167,9 @@ module.exports = {
       filename: env === 'dev' ? '[name].bundle.css' : '[name].bundle-[contenthash].css',
     }),
 
-    new ManifestPlugin(),
+    new ManifestPlugin({
+      fileName: 'febs-manifest.json',
+    }),
 
     new UglifyJsPlugin({
       sourceMap: env === 'prod',

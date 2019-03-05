@@ -19,8 +19,7 @@ describe('FEBS Production Tests', function () {
       entry: {
         app1: lib.absPath('fixtures/src/main-es2015.js'),
       },
-    })
-      );
+    }));
 
     assert(compiled.code[0].app1[0].content.includes('add:function'));
   });
@@ -30,13 +29,12 @@ describe('FEBS Production Tests', function () {
       entry: {
         app1: lib.absPath('fixtures/src/main-es2015.js'),
       },
-    })
-      );
+    }));
 
-      // source and sourcemap.
+    // source and sourcemap.
     assert.equal(compiled.code[0].app1.length, 2); // js and map
 
-      // sourcemap
+    // sourcemap
     assert(compiled.code[0].app1[1].filename.includes('.map'));
     assert(compiled.code[0].app1[0].content.length > 0);
   });
@@ -46,8 +44,7 @@ describe('FEBS Production Tests', function () {
       entry: {
         app1: lib.absPath('fixtures/src/main-es2015.js'),
       },
-    })
-      );
+    }));
 
     assert(compiled.code[0].app1[0].filename.match(/-[a-z0-9]{10,}\.js$/));
   });
@@ -67,19 +64,18 @@ describe('FEBS Production Tests', function () {
       entry: {
         app1: lib.absPath('fixtures/src/main-es2015-syntax-errors.js'),
       },
-    })
-    ).then((o) => {
+    })).then((o) => {
       assert.equal(o.exitCode, 1);
     });
   });
 
   it('should not return exit code 1 only lint errors', async function () {
     await compile(lib.createConf({
-        entry: {
-          app1: lib.absPath('fixtures/src/main-es2015-lint-errors.js'),
-        },
-      })).then((o) => {
-      assert.equal(o.exitCode, 0)
-    })
+      entry: {
+        app1: lib.absPath('fixtures/src/main-es2015-lint-errors.js'),
+      },
+    })).then((o) => {
+      assert.equal(o.exitCode, 0);
+    });
   });
 });

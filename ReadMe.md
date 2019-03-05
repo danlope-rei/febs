@@ -12,7 +12,7 @@ Its code falls into two categories
 ### [Build Features](#build-features)
 
 [JavaScript](#javascript) / [Style](#style), [Source Maps](#source-maps), [Live reloading](#live-reloading),
-[Code Watching](#code-watching), [Linting](#linting), etc.
+[Code Watching](#code-watching), etc.
 
 ### [FEBS core](#febs-core)
 
@@ -94,21 +94,8 @@ You can adjust these default configurations using the [febs configuration](#febs
 @TODO: additional detail
 
 ### Linting
-Linting is provided via [eslint](https://eslint.org/)
-
- `eslint` will run on both JavaScript and Vue components using the `.eslintrc.json` that is created on `febs init`.
-This config is used by both `webpack` during a build and `eslint` at the command line so the results should be identical.
-
-- To run `eslint` at the command line:  `npx eslint <file/directory/etc>`
-
-- To fix `eslint` errors, `npx eslint --fix <file/directory/etc>`
-
-- Currently, `febs init` copies over the `.eslintrc.json` file but in the future we'll likely be creating a shared `eslint` configuration used by both `wp` and the `eslint` at the command line.
-
-- `febs` is configured to return Linux compatible exit codes in order to signal to a global build
- tool (such as Maven) the success / failure of the front-end build. In the case of lint-only 
- errors, we do not return an error code 1 (error) as we don't want to fail the global build due 
- to linting errors, however, they are still reported. In the near future, this will be configurable.
+As FEBS is responsible only for *building* your code, it does not provide for linting. You should 
+implement a linting step per your style guide as a separate npm task in your `package.json`.
 
 ### Code watching
 @TODO: additional detail

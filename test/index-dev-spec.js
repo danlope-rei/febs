@@ -4,9 +4,8 @@
 // Dependencies.
 const assert = require('assert');
 const path = require('path');
-const lib = require('./lib');
 const sinon = require('sinon');
-const logger = require('../lib/logger');
+const lib = require('./lib');
 
 // febs module
 const febsModule = require('../index');
@@ -55,7 +54,7 @@ describe('FEBS Development Tests', function () {
           app: lib.absPath('fixtures/src/main-es2015-syntax-errors.js'),
         },
       })).then((o) => {
-        assert.ok(o.stats.compilation.errors[0].message.includes('Parsing error'));
+        assert.ok(o.stats.compilation.errors[0].message.includes('Unexpected token'));
       });
     });
 
@@ -64,40 +63,7 @@ describe('FEBS Development Tests', function () {
         entry: {
           app: lib.absPath('fixtures/src/main-es2015-lint-errors.js'),
         },
-      })).then(o => { assert.equal(o.exitCode, 0)})
-    });
-  });
-
-  describe('Riot', function () {
-    it('compiles Riot tags', async function () {
-      const compiled = await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-riot.js'),
-        },
-      }));
-
-      assert(compiled.code[0].app[0].content.includes('coolcomponent'));
-    });
-
-    it('transpiles es2015+ Riot tags', async function () {
-      const compiled = await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-riot-with-es2015.js'),
-        },
-      }));
-
-      assert(compiled.code[0].app[0].content.includes('var coolVar = 0'));
-      assert(!compiled.code[0].app[0].content.includes('let coolVar = 0'));
-    });
-
-    it('detects Riot parse errors', async function () {
-      await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-riot-syntax-error.js'),
-        },
-      })).then((o) => {
-        assert.ok(o.stats.compilation.errors[1].message.includes('Unexpected token'));
-      });
+      })).then((o) => { assert.equal(o.exitCode, 0); });
     });
   });
 
@@ -119,8 +85,8 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(compiled.code[0].app[0].content.includes('var str = \'Hello world\''));
-      assert(!compiled.code[0].app[0].content.includes('const str = \'Hello world\''));
+      assert(compiled.code[0].app[0].content.includes('function helloWorld'));
+      assert(compiled.code[0].app[0].content.includes('var a = o.a'));
     });
 
     it('detects Vue JavaScript syntax errors', async function () {
@@ -130,16 +96,6 @@ describe('FEBS Development Tests', function () {
         },
       })).then((o) => {
         assert.ok(o.stats.compilation.errors[0].message.includes('SyntaxError'));
-      });
-    });
-
-    it('detects Vue lint errors', async function () {
-      await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-vue-lint-error.js'),
-        },
-      })).then((o) => {
-        assert.ok(o.stats.compilation.errors[0].message.includes('Expected 1 space'));
       });
     });
   });
@@ -165,7 +121,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      const manifestFile = path.resolve(compiled.options.output.path, 'manifest.json');
+      const manifestFile = path.resolve(compiled.options.output.path, 'febs-manifest.json');
       assert(fs.statSync(manifestFile).isFile());
 
       const manifestJson = getJsonFromFS(manifestFile);
@@ -177,15 +133,15 @@ describe('FEBS Development Tests', function () {
     it('compiles LESS', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
-            // app: lib.absPath('../../core-css-build/test/fixtures/src/main.less'),
+          // app: lib.absPath('../../core-css-build/test/fixtures/src/main.less'),
           app: lib.absPath('fixtures/src/main-with-less.js'),
         },
       }));
 
-        // todo: How to not write extraneous js file (due to the output entry in webpack.config)
-        // that is always generated when LESS compile runs.
-        // Currently, need to require less in the js.. Is this how we should be
-        // pulling in less in wp?
+      // todo: How to not write extraneous js file (due to the output entry in webpack.config)
+      // that is always generated when LESS compile runs.
+      // Currently, need to require less in the js.. Is this how we should be
+      // pulling in less in wp?
 
       assert(compiled.code[0].app[1].content.includes('border-color'));
     });
@@ -199,8 +155,8 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(compiled.code[0].app[1].content.includes('color:' +
-        ' #some-color-scss'));
+      assert(compiled.code[0].app[1].content.includes('color:'
+        + ' #some-color-scss'));
     });
   });
 
@@ -245,12 +201,11 @@ describe('FEBS Development Tests', function () {
 
   describe('febs-config via constructor', function () {
     it('should allow dist path to be changed', function () {
-
       const desiredOutputPath = path.resolve('./cool_output_path');
 
-      const febs = febsModule({
+      const febs = febsModule('build', {
         output: {
-          path: desiredOutputPath
+          path: desiredOutputPath,
         },
         fs,
       });
@@ -261,13 +216,12 @@ describe('FEBS Development Tests', function () {
     });
 
     it('should allow entry points to be changed', function () {
-
       const desiredEntryPath = 'src/js/entryX.js';
 
-      const webpackConfig = febsModule({
+      const webpackConfig = febsModule('build', {
         entry: {
           app: [
-            desiredEntryPath
+            desiredEntryPath,
           ],
         },
         fs,
@@ -275,18 +229,15 @@ describe('FEBS Development Tests', function () {
 
       assert(webpackConfig.entry.app[0].endsWith(desiredEntryPath));
     });
-
   });
 
   describe('Exit codes', function () {
     it('should not return exit code 1 in dev mode so that watching persists)', async function () {
-
       await compile(lib.createConf({
         entry: {
           app1: lib.absPath('fixtures/src/main-es2015-syntax-errors.js'),
         },
-      })
-      ).then((o) => { assert.equal(o.exitCode, 0)});
+      })).then((o) => { assert.equal(o.exitCode, 0); });
     });
   });
 
@@ -305,7 +256,6 @@ describe('FEBS Development Tests', function () {
        */
 
       it('should return error if trying to delete non-existent directory', function () {
-
         // Create test dir structure
         fs.mkdirpSync('/parent');
 
@@ -317,39 +267,38 @@ describe('FEBS Development Tests', function () {
       });
 
       it('should delete contents of a directory, leaving the parent', function () {
-
         // Need to stub lstatSync().isFile() values since lstatSync doesn't
         // exist in memory-fs.
         const lstatSyncStub = sinon.stub();
 
         lstatSyncStub.withArgs('/parent/dir1/a').returns({
-          isFile: () => true
+          isFile: () => true,
         });
         lstatSyncStub.withArgs('/parent/dir1/b').returns({
-          isFile: () => true
+          isFile: () => true,
         });
         lstatSyncStub.withArgs('/parent/dir2/dir3/c').returns({
-          isFile: () => true
+          isFile: () => true,
         });
 
         lstatSyncStub.withArgs('/parent/dir2/dir3/d').returns({
-          isFile: () => true
+          isFile: () => true,
         });
 
         lstatSyncStub.withArgs('/parent').returns({
-          isFile: () => false
+          isFile: () => false,
         });
 
         lstatSyncStub.withArgs('/parent/dir1').returns({
-          isFile: () => false
+          isFile: () => false,
         });
 
         lstatSyncStub.withArgs('/parent/dir2').returns({
-          isFile: () => false
+          isFile: () => false,
         });
 
         lstatSyncStub.withArgs('/parent/dir2/dir3').returns({
-          isFile: () => false
+          isFile: () => false,
         });
 
         // Create test dir structure
@@ -362,7 +311,7 @@ describe('FEBS Development Tests', function () {
 
         fs.lstatSync = lstatSyncStub;
 
-        const febs = febsModule({
+        const febs = febsModule('build', {
           fs,
         });
 
@@ -371,7 +320,6 @@ describe('FEBS Development Tests', function () {
         assert.deepEqual(fs.readdirSync('/parent'), []);
       });
     });
-
   });
 
   describe('Dev Server', function () {

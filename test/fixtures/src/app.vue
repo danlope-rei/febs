@@ -1,4 +1,4 @@
-// app.vue with ES2015
+// app.vue with ES2015+
 <style>
   .red {
     color: #f00;
@@ -12,10 +12,15 @@
 <script>
 export default {
   data() {
-    const str = 'Hello world';
+    const str = 'Hello world!';
+
+    const helloWorld = (o) => {
+      const {a, b} = o;
+      return `Vue says, "${str}!"`
+    };
 
     return {
-      msg: `Vue says, "${str}!"`,
+      msg: helloWorld(),
     };
   },
 };

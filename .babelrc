@@ -1,20 +1,18 @@
 {
   "presets": [
     [
-      "env",
-      {
+      "@babel/preset-env",{
         "targets": {
           "browsers": [
-            "Chrome >= 41",
+            "Chrome >= 69",
             "Firefox > 57",
-            "iOS > 7",
+            "iOS > 11",
             "Safari >= 9",
             "Explorer >= 11",
             "Edge >= 15"
           ]
         }
       }
-    ],
-    ["es2015-riot"]
+    ]
   ]
 }

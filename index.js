@@ -16,15 +16,11 @@ const projectPath = process.cwd();
  *
  * Passed in at run or test time
  * @param conf.env The environment (dev or prod)
- *
- * Passed in at run-time
- * @param conf.command The command received from commander.
- *
+ * @param command The command from commander.
  * passed in at test-time
  * @param conf.fs The file system (passed in from unit tests.)
  */
-module.exports = function init(conf = {}) {
-  const { command } = conf;
+module.exports = function init(command, conf = {}) {
   let ssr = false;
 
   const febsConfigArg = conf;
@@ -151,15 +147,6 @@ module.exports = function init(conf = {}) {
 
     // No errors.
     if (stats.compilation.errors && stats.compilation.errors.length === 0) {
-      return {
-        err,
-        stats,
-        exitCode: 0,
-      };
-    }
-
-    // If only lint errors, return 0 (success), i.e., don't fail the build.
-    if (!lib.isSyntaxParseOnlyErrors(stats)) {
       return {
         err,
         stats,

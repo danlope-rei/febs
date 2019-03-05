@@ -16,8 +16,7 @@ program
   .command('build')
   .description('(Default) Builds front-end assets optimized for production\n')
   .action((command) => {
-    febs({
-      command,
+    febs(command, {
       logLevel: command.parent.verbose ? 'verbose' : 'info',
     }).compile();
   });
@@ -26,8 +25,7 @@ program
   .command('prod')
   .description('Builds front-end assets optimized for production\n')
   .action((command) => {
-    febs({
-      command,
+    febs(command, {
       logLevel: command.parent.verbose ? 'verbose' : 'info',
     }).compile();
   });
@@ -39,27 +37,15 @@ program
   .option('--watch', 'Run dev build in watch mode.')
   .action((command) => {
     if (command.devServer) {
-      febs({
-        command,
+      febs(command, {
         logLevel: command.parent.verbose ? 'verbose' : 'info',
       }).startDevServer();
     } else {
-      febs({
-        command,
+      febs(command, {
         logLevel: command.parent.verbose ? 'verbose' : 'info',
       }).compile();
     }
   });
-
-program
-  .command('init')
-  .description('Creates basic scaffolding for a new front-end build\n')
-  .action(() => {
-    // eslint-disable-next-line global-require
-    const febsInit = require('../febs-init.js');
-    febsInit();
-  });
-
 
 program
   .on('--help', () => {
