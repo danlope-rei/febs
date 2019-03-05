@@ -4,7 +4,9 @@
 
 ## Summary
 
-`FEBS` is an extensible `webpack`-based [front-end build system](https://engineering.rei.com/frontend/the-rei-front-end-build-system.html) 
+`FEBS` is an extensible [webpack](https://webpack.js.org/)\-based [front-end build system]
+(https://engineering.rei
+.com/frontend/the-rei-front-end-build-system.html) 
 designed to be used by a community of front-end developers or a series of projects using a similar set of technologies in order to reduce duplicate effort on build configuration.
 
 Its code falls into two categories
@@ -45,8 +47,8 @@ FEBS exposes an executable named `febs` to be used within the scripts of your `p
       "watch": "NODE_ENV=dev febs dev --no-dev-server --watch"
     }
 
-There is [some work](#23) to remove the requirement on `NODE_ENV` and give full
-respect to the second argument.
+There is [some work](#23) to remove the requirement on `NODE_ENV` and give full respect to the 
+second argument.
 
 #### Update or use [defaults](#default-configuration) to specify paths for the CSS and JS you want to compile and [run](#run)
 
@@ -92,7 +94,7 @@ implement a linting step per your style guide as a separate npm task in your `pa
 ### Code watching
 To enable code watching, run:
 
-    febs dev --watch --no-dev-server
+    NODE_ENV=dev npx febs dev --no-dev-server --watch
 
 ### Live reloading
 @TODO: additional detail
@@ -102,16 +104,20 @@ To enable code watching, run:
 ### Command-line interface
 FEBS provides a simple command-line interface.
 
+Note: There is [some work](#23) to remove the requirement on `NODE_ENV` and give full respect to the 
+      second argument.
+
 ### Production and Development Builds
 
 #### Production Build Task
 
-    npx febs --prod
+    NODE_ENV=prod npx febs prod
 
 #### Development Build Task
 
-    npx febs --dev
-    npx febs --dev -no-dev-server
+    NODE_ENV=dev npx febs dev
+    NODE_ENV=dev npx febs dev -no-dev-server
+    NODE_ENV=dev npx febs dev --no-dev-server --watch
 
 ### FEBS Configuration
 
