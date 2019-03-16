@@ -1,9 +1,7 @@
-/* eslint-disable import/no-dynamic-require */
-
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
@@ -21,18 +19,16 @@ if (!fs.existsSync(projectPackageJson)) {
       `);
 }
 
-const packageName = require(projectPackageJson).name;
+const packageName = fs.readJsonSync(projectPackageJson).name;
 
 if (!packageName || packageName.length === 0) {
-  throw new Error(`
-  Be sure your package.json has a name property.
-      `);
+  throw new Error('Be sure your package.json has a name property.');
 }
 
 // Get appropriate environment.
 const env = !process.env.NODE_ENV ? 'prod' : process.env.NODE_ENV;
 
-const extractSass = new ExtractTextPlugin({
+const extractSass = new MiniCssExtractPlugin({
   filename: env === 'dev' ? '[name].bundle.css' : '[name].bundle-[contenthash].css',
 });
 
@@ -50,6 +46,8 @@ module.exports = {
     filename: env === 'prod' ? '[name].bundle-[hash].js' : '[name].bundle.js',
     publicPath: '/dist/',
   },
+
+  mode: env === 'prod' ? 'production' : 'development',
 
   target: 'web',
 
@@ -95,10 +93,10 @@ module.exports = {
         loader: 'vue-loader',
       }, {
         test: /\.(s[ac]|c)ss$/,
-        use: extractSass.extract({
-          use: [{
-            loader: 'css-loader',
-          }, {
+        use: [
+          env !== 'prod' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
             loader: 'postcss-loader',
             options: {
               plugins: loader => [
@@ -111,37 +109,33 @@ module.exports = {
             options: {
               outputStyle: env === 'prod' ? 'compressed' : 'nested',
             },
-          }],
-          fallback: 'style-loader',
-        }),
-      },
-      {
-        test: /\.less$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
 
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: env === 'prod',
-                sourceMap: env !== 'prod',
-              },
-            }, {
-              loader: 'postcss-loader',
-              options: {
-                plugins: loader => [
-                  postCSSImport({ root: loader.resourcePath }),
-                  autoprefixer(),
-                ],
-              },
+          },
+          'sass-loader',
+        ],
+      }, {
+        test: /\.less$/,
+        use: [
+          env !== 'prod' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              minimize: env === 'prod',
+              sourceMap: env !== 'prod',
             },
-            {
-              loader: 'less-loader',
-              options: {},
+          }, {
+            loader: 'postcss-loader',
+            options: {
+              plugins: loader => [
+                postCSSImport({ root: loader.resourcePath }),
+                autoprefixer(),
+              ],
             },
-          ],
-        }),
+          }, {
+            loader: 'less-loader',
+            options: {},
+          },
+        ],
       },
       {
         test: /\.svg$/,
@@ -163,12 +157,13 @@ module.exports = {
 
     extractSass,
 
-    new ExtractTextPlugin({
+    new MiniCssExtractPlugin({
       filename: env === 'dev' ? '[name].bundle.css' : '[name].bundle-[contenthash].css',
     }),
 
     new ManifestPlugin({
       fileName: 'febs-manifest.json',
+      publicPath: '',
     }),
 
     new UglifyJsPlugin({
@@ -180,6 +175,5 @@ module.exports = {
         compress: env === 'prod',
       },
     }),
-
   ],
 };
