@@ -57,14 +57,6 @@ describe('FEBS Development Tests', function () {
         assert.ok(o.stats.compilation.errors[0].message.includes('Unexpected token'));
       });
     });
-
-    it('detects ES lint errors', async function () {
-      await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-es2015-lint-errors.js'),
-        },
-      })).then((o) => { assert.equal(o.exitCode, 0); });
-    });
   });
 
   describe('Vue', function () {
@@ -133,7 +125,6 @@ describe('FEBS Development Tests', function () {
     it('compiles LESS', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
-          // app: lib.absPath('../../core-css-build/test/fixtures/src/main.less'),
           app: lib.absPath('fixtures/src/main-with-less.js'),
         },
       }));
@@ -143,7 +134,7 @@ describe('FEBS Development Tests', function () {
       // Currently, need to require less in the js.. Is this how we should be
       // pulling in less in wp?
 
-      assert(compiled.code[0].app[1].content.includes('border-color'));
+      assert(compiled.code[0].app[0].content.includes('border-color'));
     });
   });
 
@@ -155,7 +146,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(compiled.code[0].app[1].content.includes('color:'
+      assert(compiled.code[0].app[0].content.includes('color:'
         + ' #some-color-scss'));
     });
   });

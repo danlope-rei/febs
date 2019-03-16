@@ -37,10 +37,24 @@ module.exports = {
     // Set up in-memory file system for tests.
     compiler.outputFileSystem = fs;
 
-    // Run webpack
+    /**
+     * Run webpack
+     */
     compiler.run((err, stats) => {
       const webpackResults = febs.webpackCompileDone(err, stats);
-      const entrypoints = stats.toJson('verbose').entrypoints;
+
+      // Syntax errors are in stats object.
+      const { entrypoints, errors, warnings } = stats.toJson('verbose');
+
+      if (errors.length > 0 || warnings.length > 0) {
+        return resolve({
+          err,
+          stats,
+          code: null,
+          options: compiler.options,
+          exitCode: webpackResults.exitCode,
+        });
+      }
 
       // Reject webpack errors
       if (err) return reject(err);
@@ -50,7 +64,7 @@ module.exports = {
         const res = {};
         res[key] = []; // an array of built assets will be under the key
 
-        const assets = entrypoints[key].assets; // array of assets under that key.
+        const { assets } = entrypoints[key]; // array of assets under that key.
         assets.forEach((asset) => {
           res[key].push({
             filename: asset,
