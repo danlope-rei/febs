@@ -1,10 +1,30 @@
+/* eslint arrow-body-style: ["error", "as-needed"] */
 const path = require('path');
 const MemoryFS = require('memory-fs');
 const R = require('ramda');
 const febsModule = require('../../index');
-const lib = require('../../lib');
 
 module.exports = {
+
+  compiledWithNoErrors: compiled => compiled.stats.compilation.errors.length === 0,
+
+  compiledContains: (compiled, opts) => {
+    if (!opts.entryName && !opts.entryName && !opts.content) throw new Error('all arguments required');
+
+    for (var i = 0; i < compiled.code.length; i++) {
+      if (compiled.code[i] && compiled.code[i][opts.entryName]) {
+        const res = compiled.code[i][opts.entryName]
+          .filter(emitted => opts.fileName.test(emitted.filename))
+          .filter(emitted => opts.content.test(emitted.content))
+
+        if (res.length > 0) {
+          return true;
+        }
+
+      }
+    }
+
+  },
 
   // Set up an in-memory file system for tests.
   createFS: () => new MemoryFS(),
@@ -37,9 +57,7 @@ module.exports = {
     // Set up in-memory file system for tests.
     compiler.outputFileSystem = fs;
 
-    /**
-     * Run webpack
-     */
+    // Run webpack
     compiler.run((err, stats) => {
       const webpackResults = febs.webpackCompileDone(err, stats);
 
@@ -75,10 +93,14 @@ module.exports = {
         return res;
       });
 
+
+      const code2 = R.mergeAll(code);
+
       return resolve({
         err,
         stats,
         code,
+        code2,
         options: compiler.options,
         exitCode: webpackResults.exitCode,
       });

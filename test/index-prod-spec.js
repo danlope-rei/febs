@@ -39,7 +39,7 @@ describe('FEBS Production Tests', function () {
     assert(compiled.code[0].app1[0].content.length > 0);
   });
 
-  it('js is versioned', async function () {
+  it('versions js entry points', async function () {
     const compiled = await compile(lib.createConf({
       entry: {
         app1: lib.absPath('fixtures/src/main-es2015.js'),
@@ -49,14 +49,14 @@ describe('FEBS Production Tests', function () {
     assert(compiled.code[0].app1[0].filename.match(/-[a-z0-9]{10,}\.js$/));
   });
 
-  it('css is versioned', async function () {
+  it('versions css entry point', async function () {
     const compiled = await compile(lib.createConf({
       entry: {
-        app1: lib.absPath('fixtures/src/main.less'),
+        app1: lib.absPath('fixtures/src/styles/main.less'),
       },
     }));
 
-    assert(compiled.code[0].app1[1].filename.match(/-[a-z0-9]{10,}\.css$/));
+    assert(compiled.code[0].app1[0].filename.match(/-[a-z0-9]{10,}\.css$/));
   });
 
   it('should return exit code 1 on syntax errors', async function () {

@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
-const postCSSImport = require('postcss-import');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 // Client project path.
 const projectPath = process.cwd();
@@ -28,7 +28,7 @@ if (!packageName || packageName.length === 0) {
 // Get appropriate environment.
 const env = !process.env.NODE_ENV ? 'prod' : process.env.NODE_ENV;
 
-const extractSass = new MiniCssExtractPlugin({
+const miniCSSExtract = new MiniCssExtractPlugin({
   filename: env === 'dev' ? '[name].bundle.css' : '[name].bundle-[contenthash].css',
 });
 
@@ -83,7 +83,7 @@ module.exports = {
           options: {
             // Ignore client's .babelrc and use the .babelrc in @rei/febs.
             babelrcRoots: [path.join(__dirname, '..')],
-            cacheDirectory: path.resolve('./.babelcache'),
+            cacheDirectory: path.resolve('./node_modules/.babelcache'),
           },
         },
       },
@@ -91,39 +91,45 @@ module.exports = {
         test: /\.vue$/,
         exclude: /node_modules/,
         loader: 'vue-loader',
-      }, {
-        test: /\.(s[ac]|c)ss$/,
+      },
+      {
+        test: /\.scss$/,
         use: [
-          env !== 'prod' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          MiniCssExtractPlugin.loader,
           'css-loader',
-          {
+          'sass-loader',
+          /* {
             loader: 'postcss-loader',
             options: {
               plugins: loader => [
-                postCSSImport({ root: loader.resourcePath }),
                 autoprefixer(),
               ],
             },
-          }, {
-            loader: 'sass-loader',
-            options: {
-              outputStyle: env === 'prod' ? 'compressed' : 'nested',
-            },
-
-          },
-          'sass-loader',
+          }, */
         ],
-      }, {
+      },
+      {
         test: /\.less$/,
         use: [
-          env !== 'prod' ? 'style-loader' : MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'less-loader',
+          /* {
+            loader: 'postcss-loader',
             options: {
-              minimize: env === 'prod',
-              sourceMap: env !== 'prod',
+              plugins: loader => [
+                autoprefixer(),
+              ],
             },
-          }, {
+          }, */
+        ],
+      },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          /* {
             loader: 'postcss-loader',
             options: {
               plugins: loader => [
@@ -131,10 +137,7 @@ module.exports = {
                 autoprefixer(),
               ],
             },
-          }, {
-            loader: 'less-loader',
-            options: {},
-          },
+          }, */
         ],
       },
       {
@@ -155,16 +158,9 @@ module.exports = {
       },
     }),
 
-    extractSass,
+    new VueLoaderPlugin(),
 
-    new MiniCssExtractPlugin({
-      filename: env === 'dev' ? '[name].bundle.css' : '[name].bundle-[contenthash].css',
-    }),
-
-    new ManifestPlugin({
-      fileName: 'febs-manifest.json',
-      publicPath: '',
-    }),
+    miniCSSExtract,
 
     new UglifyJsPlugin({
       sourceMap: env === 'prod',
@@ -175,5 +171,11 @@ module.exports = {
         compress: env === 'prod',
       },
     }),
+
+    new ManifestPlugin({
+      fileName: 'febs-manifest.json',
+      publicPath: '', // dont include the public path in the key value of the manifest file
+    }),
+
   ],
 };

@@ -1,12 +1,12 @@
 /* eslint-disable global-require, import/no-dynamic-require */
 
 const wp = require('webpack');
-const logger = require('./lib/logger');
-const merge = require('webpack-merge');
-const path = require('path');
-const devServer = require('./lib/dev-server');
 const R = require('ramda');
+const path = require('path');
+const logger = require('./lib/logger');
 const lib = require('./lib');
+const merge = require('webpack-merge');
+const devServer = require('./lib/dev-server');
 
 const projectPath = process.cwd();
 
@@ -92,7 +92,7 @@ module.exports = function init(command, conf = {}) {
     const webpackConfigBase = require('./webpack-config/webpack.base.conf');
     const webpackServerConf = require('./webpack-config/webpack.server.conf');
     const configsToMerge = [webpackConfigBase];
-    let wpConf;
+
     let wpMergeConf = {
       entry: 'replace',
     };
@@ -107,7 +107,7 @@ module.exports = function init(command, conf = {}) {
       });
     }
 
-    wpConf = merge.smartStrategy(wpMergeConf)(configsToMerge);
+    const wpConf = merge.smartStrategy(wpMergeConf)(configsToMerge);
 
     // Force output path to always be the same
     wpConf.output.path = webpackConfigBase.output.path;

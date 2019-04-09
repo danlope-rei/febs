@@ -1,8 +1,15 @@
 // app.vue with ES2015+
-<style>
-  .red {
-    color: #f00;
+<style lang="less">
+  @import '../styles/main.less';
+
+  a {
+    color: blue;
+    &:hover {
+      color: green;
+      content: 'details-import-from-css';
+    }
   }
+
 </style>
 
 <template>

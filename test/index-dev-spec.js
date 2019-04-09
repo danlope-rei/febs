@@ -7,7 +7,10 @@ const path = require('path');
 const sinon = require('sinon');
 const lib = require('./lib');
 
-// febs module
+// Dependencies used by tests assertions
+const devServerFn = require('../lib/dev-server');
+const logger = require('../lib/logger');
+const wpDevConf = require('../webpack-config/webpack.base.conf');
 const febsModule = require('../index');
 
 describe('FEBS Development Tests', function () {
@@ -44,8 +47,17 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(compiled.code[0].app1[0].content.includes('add: function add()'));
-      assert(compiled.code[1].app2[0].content.includes('add: function add()'));
+      assert(lib.compiledContains(compiled, {
+        entryName: 'app1',
+        content: /unction add/,
+        fileName: /\.js$/,
+      }));
+
+      assert(lib.compiledContains(compiled, {
+        entryName: 'app2',
+        content: /unction add/,
+        fileName: /\.js$/,
+      }));
     });
 
     it('detects ES syntax errors', async function () {
@@ -59,32 +71,76 @@ describe('FEBS Development Tests', function () {
     });
   });
 
+
   describe('Vue', function () {
     it('compiles Vue tags', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
-          app: lib.absPath('fixtures/src/main-vue.js'),
+          app: lib.absPath('fixtures/src/vue/main-vue.js'),
         },
       }));
 
-      assert(compiled.code[0].app[0].content.includes('Vue says'));
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: 'app',
+        content: /Vue says/,
+        fileName: /\.js$/,
+      }));
+    });
+
+    it('extracted external vue css styles and put into app css file', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/vue/main-vue.js'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: 'app',
+        content: /papayawhip/,
+        fileName: /\.css$/,
+      }));
+    });
+
+    it('extracted inline vue css styles and put into app css file', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/vue/main-vue.js'),
+        },
+      }));
+
+      assert(lib.compiledContains(compiled, {
+        entryName: 'app',
+        content: /red/,
+        fileName: /\.css$/,
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
     });
 
     it('transpiles es2015+ Vue tags', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
-          app: lib.absPath('fixtures/src/main-vue.js'),
+          app: lib.absPath('fixtures/src/vue/main-vue.js'),
         },
       }));
 
-      assert(compiled.code[0].app[0].content.includes('function helloWorld'));
-      assert(compiled.code[0].app[0].content.includes('var a = o.a'));
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: 'app',
+        content: /function helloWorld/,
+        fileName: /\.js$/,
+      }));
     });
 
     it('detects Vue JavaScript syntax errors', async function () {
       await compile(lib.createConf({
         entry: {
-          app: lib.absPath('fixtures/src/main-vue-syntax-error.js'),
+          app: lib.absPath('fixtures/src/vue/main-vue-syntax-error.js'),
         },
       })).then((o) => {
         assert.ok(o.stats.compilation.errors[0].message.includes('SyntaxError'));
@@ -99,6 +155,7 @@ describe('FEBS Development Tests', function () {
           app: lib.absPath('fixtures/src/main-es2015.js'),
         },
       }));
+
       assert(compiled.code[0].app[0].content.includes('sourceURL'));
     });
   });
@@ -113,46 +170,24 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
+      /*
+      debugger;
+      process.stdout.write('codez');
+      process.stdout.write(JSON.stringify(compiled));
+      */
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
       const manifestFile = path.resolve(compiled.options.output.path, 'febs-manifest.json');
       assert(fs.statSync(manifestFile).isFile());
 
       const manifestJson = getJsonFromFS(manifestFile);
       assert.equal(manifestJson['app.js'], 'app.bundle.js');
-    });
-  });
 
-  describe('LESS', async function () {
-    it('compiles LESS', async function () {
-      const compiled = await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-with-less.js'),
-        },
-      }));
-
-      // todo: How to not write extraneous js file (due to the output entry in webpack.config)
-      // that is always generated when LESS compile runs.
-      // Currently, need to require less in the js.. Is this how we should be
-      // pulling in less in wp?
-
-      assert(compiled.code[0].app[0].content.includes('border-color'));
-    });
-  });
-
-  describe('SASS/SCSS', async function () {
-    it('compiles SASS/SCSS', async function () {
-      const compiled = await compile(lib.createConf({
-        entry: {
-          app: lib.absPath('fixtures/src/main-with-scss.js'),
-        },
-      }));
-
-      assert(compiled.code[0].app[0].content.includes('color:'
-        + ' #some-color-scss'));
     });
   });
 
   describe('Logger', function () {
-    const logger = require('../lib/logger');
     it('should contain setLogLevel function', function () {
       assert(logger.setLogLevel);
     });
@@ -168,7 +203,6 @@ describe('FEBS Development Tests', function () {
       const febs = febsModule({
         fs,
       });
-      const wpDevConf = require('../webpack-config/webpack.base.conf');
       const expectedLength = wpDevConf.module.rules.length;
       const wpConfig = febs.getWebpackConfig(wpDevConf);
       assert.equal(expectedLength, wpConfig.module.rules.length);
@@ -314,7 +348,6 @@ describe('FEBS Development Tests', function () {
   });
 
   describe('Dev Server', function () {
-    const devServerFn = require('../lib/dev-server');
     const devServer = devServerFn({}, function () {
       this.app = {};
 
