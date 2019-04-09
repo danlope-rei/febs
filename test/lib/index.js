@@ -9,13 +9,18 @@ module.exports = {
   compiledWithNoErrors: compiled => compiled.stats.compilation.errors.length === 0,
 
   compiledContains: (compiled, opts) => {
-    if (!opts.entryName && !opts.entryName && !opts.content) throw new Error('all arguments required');
+    if (!opts.fileName) opts.fileName = /.*/;
+    if (!opts.content) opts.content = /.*/;
 
-    const res = compiled.code[opts.entryName]
+    let entries = Object.keys(compiled.code);
+
+    if (opts.entryName) entries = entries.filter(entry => opts.entryName.test(entry));
+
+    // if there is no entry name, map through all entries
+    return R.any(entryName => compiled.code[entryName]
       .filter(emitted => opts.fileName.test(emitted.filename))
-      .filter(emitted => opts.content.test(emitted.content));
-
-    return res.length > 0;
+      .filter(emitted => opts.content.test(emitted.content)).length > 0,
+    entries);
   },
 
   // Set up an in-memory file system for tests.
