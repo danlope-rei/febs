@@ -35,8 +35,8 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert.equal(compiled.code[0].app[0].filename, 'app.bundle.js');
-      assert(compiled.code[0].app[0].content.includes('add: function add()'));
+      assert.equal(compiled.code.app[0].filename, 'app.bundle.js');
+      assert(compiled.code.app[0].content.includes('add: function add()'));
     });
 
     it('builds multiple ES bundles', async function () {
@@ -156,7 +156,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(compiled.code[0].app[0].content.includes('sourceURL'));
+      assert(compiled.code.app[0].content.includes('sourceURL'));
     });
   });
 

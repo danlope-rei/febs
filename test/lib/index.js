@@ -11,19 +11,11 @@ module.exports = {
   compiledContains: (compiled, opts) => {
     if (!opts.entryName && !opts.entryName && !opts.content) throw new Error('all arguments required');
 
-    for (var i = 0; i < compiled.code.length; i++) {
-      if (compiled.code[i] && compiled.code[i][opts.entryName]) {
-        const res = compiled.code[i][opts.entryName]
-          .filter(emitted => opts.fileName.test(emitted.filename))
-          .filter(emitted => opts.content.test(emitted.content))
+    const res = compiled.code[opts.entryName]
+      .filter(emitted => opts.fileName.test(emitted.filename))
+      .filter(emitted => opts.content.test(emitted.content));
 
-        if (res.length > 0) {
-          return true;
-        }
-
-      }
-    }
-
+    return res.length > 0;
   },
 
   // Set up an in-memory file system for tests.
@@ -78,7 +70,8 @@ module.exports = {
       if (err) return reject(err);
 
       // Resolve with wp compile results.
-      const code = Object.keys(entrypoints).map((key) => { // key is entrypoint key (e.g. "app")
+      // key is entrypoint key (e.g. "app")
+      const code = R.mergeAll(Object.keys(entrypoints).map((key) => {
         const res = {};
         res[key] = []; // an array of built assets will be under the key
 
@@ -91,16 +84,13 @@ module.exports = {
         });
 
         return res;
-      });
+      }));
 
-
-      const code2 = R.mergeAll(code);
 
       return resolve({
         err,
         stats,
         code,
-        code2,
         options: compiler.options,
         exitCode: webpackResults.exitCode,
       });

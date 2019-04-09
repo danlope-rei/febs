@@ -21,7 +21,7 @@ describe('FEBS Production Tests', function () {
       },
     }));
 
-    assert(compiled.code[0].app1[0].content.includes('add:function'));
+    assert(compiled.code.app1[0].content.includes('add:function'));
   });
 
   it('js contains sourcemap', async function () {
@@ -32,11 +32,11 @@ describe('FEBS Production Tests', function () {
     }));
 
     // source and sourcemap.
-    assert.equal(compiled.code[0].app1.length, 2); // js and map
+    assert.equal(compiled.code.app1.length, 2); // js and map
 
     // sourcemap
-    assert(compiled.code[0].app1[1].filename.includes('.map'));
-    assert(compiled.code[0].app1[0].content.length > 0);
+    assert(compiled.code.app1[1].filename.includes('.map'));
+    assert(compiled.code.app1[0].content.length > 0);
   });
 
   it('versions js entry points', async function () {
@@ -46,7 +46,7 @@ describe('FEBS Production Tests', function () {
       },
     }));
 
-    assert(compiled.code[0].app1[0].filename.match(/-[a-z0-9]{10,}\.js$/));
+    assert(compiled.code.app1[0].filename.match(/-[a-z0-9]{10,}\.js$/));
   });
 
   it('versions css entry point', async function () {
@@ -56,7 +56,7 @@ describe('FEBS Production Tests', function () {
       },
     }));
 
-    assert(compiled.code[0].app1[0].filename.match(/-[a-z0-9]{10,}\.css$/));
+    assert(compiled.code.app1[0].filename.match(/-[a-z0-9]{10,}\.css$/));
   });
 
   it('should return exit code 1 on syntax errors', async function () {
