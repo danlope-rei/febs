@@ -8,18 +8,14 @@ module.exports = {
 
   compiledWithNoErrors: compiled => compiled.stats.compilation.errors.length === 0,
 
-  compiledContains: (compiled, opts) => {
-    if (!opts.fileName) opts.fileName = /.*/;
-    if (!opts.content) opts.content = /.*/;
-    if (!opts.entryName) opts.entryName = /.*/;
-
+  compiledContains: (compiled, { entryName = /.*/, fileName = /.*/, content = /.*/ } = {}) => {
     const entries = Object.keys(compiled.code)
-      .filter(entry => opts.entryName.test(entry));
+      .filter(entry => entryName.test(entry));
 
     // if there is no entry name, map through all entries
-    return R.any(entryName => compiled.code[entryName]
-      .filter(emitted => opts.fileName.test(emitted.filename))
-      .filter(emitted => opts.content.test(emitted.content)).length > 0,
+    return R.any(e => compiled.code[e]
+      .filter(emitted => fileName.test(emitted.filename))
+      .filter(emitted => content.test(emitted.content)).length > 0,
     entries);
   },
 
