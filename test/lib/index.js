@@ -100,8 +100,8 @@ module.exports = {
   ),
 
   /**
-   * @param Object webpack compilation object
-   * @param Object, criteria to match on, fileName, entryName, content
+   * @param Object Webpack compilation object
+   * @param Object Criteria to match on, fileName, entryName, content
    * @returns Boolean If matched criteria
    */
   compiledContains: (compiled, { entryName = /.*/, fileName = /.*/, content = /.*/ } = {}) => {
