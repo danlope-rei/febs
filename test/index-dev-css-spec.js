@@ -33,7 +33,7 @@ describe('CSS Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /border-color/,
         fileName: /\.css$/,
       }));
@@ -50,7 +50,7 @@ describe('CSS Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /less-is-da-best/,
         fileName: /\.css$/,
       }));
@@ -66,7 +66,7 @@ describe('CSS Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /details-import-from-css/,
         fileName: /\.css$/,
       }));
@@ -82,7 +82,7 @@ describe('CSS Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /less-is-da-best/,
         fileName: /\.css$/,
       }));
@@ -101,7 +101,7 @@ describe('CSS Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /some-color-scss/,
         fileName: /\.css$/,
       }));
@@ -117,7 +117,7 @@ describe('CSS Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /cool-scss/,
         fileName: /\.css$/,
       }));
@@ -133,7 +133,7 @@ describe('CSS Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /less-is-da-best/,
         fileName: /\.css$/,
       }));

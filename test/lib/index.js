@@ -12,9 +12,10 @@ module.exports = {
     if (!opts.fileName) opts.fileName = /.*/;
     if (!opts.content) opts.content = /.*/;
 
-    let entries = Object.keys(compiled.code);
+    if (!opts.entryName) opts.entryName = /.*/;
 
-    if (opts.entryName) entries = entries.filter(entry => opts.entryName.test(entry));
+    const entries = Object.keys(compiled.code)
+      .filter(entry => opts.entryName.test(entry));
 
     // if there is no entry name, map through all entries
     return R.any(entryName => compiled.code[entryName]

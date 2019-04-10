@@ -35,7 +35,7 @@ describe('FEBS Lib Tests', function () {
 
     // .code.app1[0].content.includes('add:function')
     assert(!lib.compiledContains(compiled, {
-      entryName: /appx/,
+      entryName: /apx/,
       fileName: /\.js$/,
       content: /ction/,
     }));
@@ -78,7 +78,7 @@ describe('FEBS Lib Tests', function () {
 
     // .code.app1[0].content.includes('add:function')
     assert(lib.compiledContains(compiled, {
-      content: /add: function/,
+      content: /add/,
     }));
   });
 });

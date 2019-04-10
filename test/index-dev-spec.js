@@ -48,13 +48,13 @@ describe('FEBS Development Tests', function () {
       }));
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app1',
+        entryName: /app1/,
         content: /unction add/,
         fileName: /\.js$/,
       }));
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app2',
+        entryName: /app2/,
         content: /unction add/,
         fileName: /\.js$/,
       }));
@@ -83,7 +83,7 @@ describe('FEBS Development Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /Vue says/,
         fileName: /\.js$/,
       }));
@@ -99,7 +99,7 @@ describe('FEBS Development Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /papayawhip/,
         fileName: /\.css$/,
       }));
@@ -113,7 +113,7 @@ describe('FEBS Development Tests', function () {
       }));
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /red/,
         fileName: /\.css$/,
       }));
@@ -131,7 +131,7 @@ describe('FEBS Development Tests', function () {
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
-        entryName: 'app',
+        entryName: /^app$/,
         content: /function helloWorld/,
         fileName: /\.js$/,
       }));
