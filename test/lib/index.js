@@ -6,19 +6,6 @@ const febsModule = require('../../index');
 
 module.exports = {
 
-  compiledWithNoErrors: compiled => compiled.stats.compilation.errors.length === 0,
-
-  compiledContains: (compiled, { entryName = /.*/, fileName = /.*/, content = /.*/ } = {}) => {
-    const entries = Object.keys(compiled.code)
-      .filter(entry => entryName.test(entry));
-
-    // if there is no entry name, map through all entries
-    return R.any(e => compiled.code[e]
-      .filter(emitted => fileName.test(emitted.filename))
-      .filter(emitted => content.test(emitted.content)).length > 0,
-    entries);
-  },
-
   // Set up an in-memory file system for tests.
   createFS: () => new MemoryFS(),
 
@@ -111,4 +98,22 @@ module.exports = {
     JSON.parse,
     file => fs.readFileSync(file, 'utf8')
   ),
+
+  /**
+   * @param Object webpack compilation object
+   * @param Object, criteria to match on, fileName, entryName, content
+   * @returns Boolean If matched criteria
+   */
+  compiledContains: (compiled, { entryName = /.*/, fileName = /.*/, content = /.*/ } = {}) => {
+    const entries = Object.keys(compiled.code)
+      .filter(entry => entryName.test(entry));
+
+    // if there is no entry name, map through all entries
+    return R.any(e => compiled.code[e]
+      .filter(emitted => fileName.test(emitted.filename))
+      .filter(emitted => content.test(emitted.content)).length > 0,
+    entries);
+  },
+
+  compiledWithNoErrors: compiled => compiled.stats.compilation.errors.length === 0,
 };

@@ -170,12 +170,6 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      /*
-      debugger;
-      process.stdout.write('codez');
-      process.stdout.write(JSON.stringify(compiled));
-      */
-
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       const manifestFile = path.resolve(compiled.options.output.path, 'febs-manifest.json');
@@ -183,7 +177,6 @@ describe('FEBS Development Tests', function () {
 
       const manifestJson = getJsonFromFS(manifestFile);
       assert.equal(manifestJson['app.js'], 'app.bundle.js');
-
     });
   });
 

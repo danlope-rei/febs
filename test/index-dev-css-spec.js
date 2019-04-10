@@ -29,7 +29,6 @@ describe('CSS Tests', function () {
         },
       }));
 
-      // fail on compilation errors and show the error verbosely
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
@@ -46,7 +45,6 @@ describe('CSS Tests', function () {
         },
       }));
 
-      // fail on compilation errors and show the error verbosely
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
@@ -97,7 +95,6 @@ describe('CSS Tests', function () {
         },
       }));
 
-      // fail on compilation errors and show the error verbosely
       assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
 
       assert(lib.compiledContains(compiled, {
