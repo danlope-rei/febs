@@ -11,7 +11,6 @@ module.exports = {
   compiledContains: (compiled, opts) => {
     if (!opts.fileName) opts.fileName = /.*/;
     if (!opts.content) opts.content = /.*/;
-
     if (!opts.entryName) opts.entryName = /.*/;
 
     const entries = Object.keys(compiled.code)
