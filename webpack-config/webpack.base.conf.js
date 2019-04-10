@@ -6,6 +6,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 // Client project path.
 const projectPath = process.cwd();
@@ -97,15 +98,15 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
-          'sass-loader',
-          /* {
+          {
             loader: 'postcss-loader',
             options: {
-              plugins: loader => [
+              plugins: () => [
                 autoprefixer(),
               ],
             },
-          }, */
+          },
+          'sass-loader',
         ],
       },
       {
@@ -113,15 +114,15 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
-          'less-loader',
-          /* {
+          {
             loader: 'postcss-loader',
             options: {
-              plugins: loader => [
+              plugins: () => [
                 autoprefixer(),
               ],
             },
-          }, */
+          },
+          'less-loader',
         ],
       },
       {
@@ -129,15 +130,14 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
-          /* {
+          {
             loader: 'postcss-loader',
             options: {
-              plugins: loader => [
-                postCSSImport({ root: loader.resourcePath }),
+              plugins: () => [
                 autoprefixer(),
               ],
             },
-          }, */
+          },
         ],
       },
       {
@@ -171,6 +171,8 @@ module.exports = {
         compress: env === 'prod',
       },
     }),
+
+    new OptimizeCssAssetsPlugin(),
 
     new ManifestPlugin({
       fileName: 'febs-manifest.json',

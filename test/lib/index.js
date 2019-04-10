@@ -108,7 +108,6 @@ module.exports = {
     const entries = Object.keys(compiled.code)
       .filter(entry => entryName.test(entry));
 
-    // if there is no entry name, map through all entries
     return R.any(e => compiled.code[e]
       .filter(emitted => fileName.test(emitted.filename))
       .filter(emitted => content.test(emitted.content)).length > 0,

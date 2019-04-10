@@ -1,6 +1,6 @@
 {
   "name": "@rei/febs",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "REI's next-gen front-end build system.",
   "main": "index.js",
   "directories": {
@@ -46,6 +46,7 @@
     "mini-css-extract-plugin": "^0.5.0",
     "mocha": "^5.2.0",
     "node-sass": "^4.9.3",
+    "postcss-loader": "^3.0.0",
     "ramda": "^0.25.0",
     "sass-loader": "^6.0.7",
     "uglifyjs-webpack-plugin": "^1.2.3",
@@ -63,6 +64,7 @@
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
     "sinon": "^6.1.4",
     "vue": "^2.5.17"
   },

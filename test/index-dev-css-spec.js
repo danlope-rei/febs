@@ -19,7 +19,118 @@ describe('CSS Tests', function () {
     compile = lib.createCompileFn(fs);
   });
 
-  // @TODO: tests for vanilla CSS
+  describe('CSS', async function () {
+    it.only('minifies CSS from webpack entry point', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/minify.css'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(!lib.compiledContains(compiled, {
+        content: /Resistance is futile./,
+      }));
+    });
+
+    it('compiles CSS from js entry point', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/main-with-css.js'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: /^app$/,
+        content: /css-is-da-best/,
+        fileName: /\.css$/,
+      }));
+    });
+
+    it('compiles CSS from webpack entry point', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/main.css'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: /^app$/,
+        content: /css-is-da-best/,
+        fileName: /\.css$/,
+      }));
+    });
+
+    it('compiles inline CSS within a vue component', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/css-app.vue'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: /^app$/,
+        content: /details-import-from-css/,
+        fileName: /\.css$/,
+      }));
+    });
+
+    it('compiles imported CSS within a vue component', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/css-app.vue'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: /^app$/,
+        content: /css-is-da-best/,
+        fileName: /\.css$/,
+      }));
+    });
+
+    it('autoprefixes css', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/autoprefix.css'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: /^app$/,
+        content: /ms-/,
+        fileName: /\.css$/,
+      }));
+    });
+
+    it('imports css', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/imports.css'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: /^app$/,
+        content: /css-is-da-best/,
+        fileName: /\.css$/,
+      }));
+    });
+  });
+
 
   describe('LESS', async function () {
     it('compiles LESS from js entry point', async function () {
@@ -85,6 +196,22 @@ describe('CSS Tests', function () {
         fileName: /\.css$/,
       }));
     });
+
+    it('autoprefixes less', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/autoprefix.less'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: /^app$/,
+        content: /ms-/,
+        fileName: /\.css$/,
+      }));
+    });
   });
 
   describe('SCSS', async function () {
@@ -132,6 +259,22 @@ describe('CSS Tests', function () {
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
         content: /less-is-da-best/,
+        fileName: /\.css$/,
+      }));
+    });
+
+    it('autoprefixes sass', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/styles/autoprefix.scss'),
+        },
+      }));
+
+      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+
+      assert(lib.compiledContains(compiled, {
+        entryName: /^app$/,
+        content: /ms-/,
         fileName: /\.css$/,
       }));
     });
