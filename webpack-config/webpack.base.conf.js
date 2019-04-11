@@ -6,7 +6,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const cssnano = require('cssnano')
 
 // Client project path.
 const projectPath = process.cwd();
@@ -102,6 +102,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               plugins: () => [
+                cssnano(),
                 autoprefixer(),
               ],
             },
@@ -118,6 +119,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               plugins: () => [
+                cssnano(),
                 autoprefixer(),
               ],
             },
@@ -134,6 +136,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               plugins: () => [
+                cssnano(),
                 autoprefixer(),
               ],
             },
@@ -172,7 +175,6 @@ module.exports = {
       },
     }),
 
-    new OptimizeCssAssetsPlugin(),
 
     new ManifestPlugin({
       fileName: 'febs-manifest.json',

@@ -20,7 +20,7 @@ describe('CSS Tests', function () {
   });
 
   describe('CSS', async function () {
-    it.only('minifies CSS from webpack entry point', async function () {
+    it('minifies CSS from webpack entry point', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
           app: lib.absPath('fixtures/src/styles/minify.css'),
