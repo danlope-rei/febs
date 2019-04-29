@@ -91,8 +91,11 @@ module.exports = {
       },
       {
         test: /\.vue$/,
-        exclude: /node_modules/,
         loader: 'vue-loader',
+        include: [
+          path.join(projectPath, 'src'),
+          /node_modules\/@rei/,
+        ],
       }, {
         test: /\.(s[ac]|c)ss$/,
         use: extractSass.extract({
