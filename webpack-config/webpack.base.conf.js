@@ -95,6 +95,7 @@ module.exports = {
         include: [
           path.join(projectPath, 'src'),
           /node_modules\/@rei/,
+          process.env.FEBS_TEST ? path.join(projectPath, 'test', 'fixtures') : null,
         ],
       }, {
         test: /\.(s[ac]|c)ss$/,
