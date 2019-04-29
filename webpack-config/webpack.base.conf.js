@@ -92,11 +92,12 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
-        include: [
-          path.join(projectPath, 'src'),
-          /node_modules\/@rei/,
-          process.env.FEBS_TEST ? path.join(projectPath, 'test', 'fixtures') : null,
-        ],
+        include: () => (process.env.FEBS_TEST
+          ? path.join(projectPath, 'test', 'fixtures')
+          : [
+            path.join(projectPath, 'src'),
+            /node_modules\/@rei/,
+          ]),
       }, {
         test: /\.(s[ac]|c)ss$/,
         use: extractSass.extract({
