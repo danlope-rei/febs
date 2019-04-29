@@ -6,7 +6,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const cssnano = require('cssnano')
+const cssnano = require('cssnano');
 
 // Client project path.
 const projectPath = process.cwd();
@@ -90,8 +90,8 @@ module.exports = {
       },
       {
         test: /\.vue$/,
-        exclude: /node_modules/,
         loader: 'vue-loader',
+        include: () => (process.env.febs_test ? path.join(projectPath, 'test', 'fixtures') : [path.join(projectPath, 'src'), /node_modules\/@rei/]),
       },
       {
         test: /\.scss$/,
