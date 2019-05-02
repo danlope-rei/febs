@@ -260,7 +260,7 @@ module.exports = function init(command, conf = {}) {
       }
     });
 
-    devServer(createCompiler(wpConf), WDS);
+    devServer(createWebpackCompiler(wpConf), WDS);
   }
 
   return {
