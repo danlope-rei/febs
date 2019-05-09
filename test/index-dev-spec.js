@@ -357,5 +357,21 @@ describe('FEBS Development Tests', function () {
     it('should create new server', function () {
       assert(devServer);
     });
+
+    it('should not error when creating the compiler', function () {
+      const febs = febsModule('dev', {
+        fs,
+      });
+
+      // So we aren't starting an actual server during unit tests.
+      const FakeWDS = function () {
+        this.listen = () => {}
+      };
+
+      assert.doesNotThrow(function () {
+        const wds = febs.startDevServer(FakeWDS);
+        assert(wds instanceof FakeWDS)
+      });
+    });
   });
 });

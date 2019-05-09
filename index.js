@@ -7,6 +7,7 @@ const logger = require('./lib/logger');
 const lib = require('./lib');
 const merge = require('webpack-merge');
 const devServer = require('./lib/dev-server');
+const WDS = require('webpack-dev-server');
 
 const projectPath = process.cwd();
 
@@ -238,11 +239,14 @@ module.exports = function init(command, conf = {}) {
 
   /**
    * Start the webpack dev server.
+   * @param wepackDevServer The WDS module itself.
+   * @param confOverride The webpack conf override.
    */
-  function startDevServer() {
-    const WDS = require('webpack-dev-server');
+  function startDevServer(wepackDevServer, confOverride) {
 
-    const wpConf = getWebpackConfig();
+    wepackDevServer = wepackDevServer || WDS;
+
+    const wpConf = getWebpackConfig(confOverride);
 
     // Need to update the app entry for webpack-dev-server. This is necessary for
     // the auto page refresh to happen. See: https://github.com/webpack/webpack-dev-server/blob/master/examples/node-api-simple/webpack.config.js
@@ -260,7 +264,7 @@ module.exports = function init(command, conf = {}) {
       }
     });
 
-    devServer(createWebpackCompiler(wpConf), WDS);
+    return devServer(createWebpackCompiler(wpConf), wepackDevServer);
   }
 
   return {
