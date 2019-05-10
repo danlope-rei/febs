@@ -264,7 +264,10 @@ module.exports = function init(command, conf = {}) {
       }
     });
 
-    return devServer(createWebpackCompiler(wpConf), wepackDevServer);
+    return {
+      devServer: devServer(createWebpackCompiler(wpConf), wepackDevServer),
+      wpConf
+    };
   }
 
   return {

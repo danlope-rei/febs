@@ -358,7 +358,7 @@ describe('FEBS Development Tests', function () {
       assert(devServer);
     });
 
-    it('should not error when creating the compiler', function () {
+    it('should pass modified conf to dev server', function () {
       const febs = febsModule('dev', {
         fs,
       });
@@ -368,10 +368,14 @@ describe('FEBS Development Tests', function () {
         this.listen = () => {}
       };
 
-      assert.doesNotThrow(function () {
-        const wds = febs.startDevServer(FakeWDS);
-        assert(wds instanceof FakeWDS)
-      });
+      // Assert dev server returned
+      const { devServer, wpConf } = febs.startDevServer(FakeWDS);
+      assert(devServer instanceof FakeWDS);
+
+      // Assert modified webpack conf returned.
+      const pathToWPDSClient = `${path.join(__dirname, '..', 'node_modules/webpack-dev-server/client')}?http://localhost:8080`;
+      assert.equal(wpConf.entry.app.length, 3);
+      assert.equal(wpConf.entry.app[0], pathToWPDSClient);
     });
   });
 });
