@@ -357,5 +357,25 @@ describe('FEBS Development Tests', function () {
     it('should create new server', function () {
       assert(devServer);
     });
+
+    it('should pass modified conf to dev server', function () {
+      const febs = febsModule('dev', {
+        fs,
+      });
+
+      // So we aren't starting an actual server during unit tests.
+      const FakeWDS = function () {
+        this.listen = () => {}
+      };
+
+      // Assert dev server returned
+      const { devServer, wpConf } = febs.startDevServer(FakeWDS);
+      assert(devServer instanceof FakeWDS);
+
+      // Assert modified webpack conf returned.
+      const pathToWPDSClient = `${path.join(__dirname, '..', 'node_modules/webpack-dev-server/client')}?http://localhost:8080`;
+      assert.equal(wpConf.entry.app.length, 3);
+      assert.equal(wpConf.entry.app[0], pathToWPDSClient);
+    });
   });
 });
