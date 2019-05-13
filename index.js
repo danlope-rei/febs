@@ -252,17 +252,17 @@ module.exports = function init(command, conf = {}) {
     // the auto page refresh to happen. See: https://github.com/webpack/webpack-dev-server/blob/master/examples/node-api-simple/webpack.config.js
     const pathToWPDSClient = `${path.resolve(projectPath, 'node_modules/webpack-dev-server/client')}?http://localhost:8080`;
 
-    Object.keys(wpConf.entry).forEach((key) => {
-      if (Array.isArray(wpConf.entry[key])) {
-        wpConf.entry[key] = wpConf.entry[key].map(val => path.resolve(projectPath, val));
-        wpConf.entry[key].unshift(pathToWPDSClient);
-      } else {
-        wpConf.entry[key] = [
-          pathToWPDSClient,
-          path.resolve(projectPath, wpConf.entry[key]),
-        ];
-      }
-    });
+    // Object.keys(wpConf.entry).forEach((key) => {
+    //   if (Array.isArray(wpConf.entry[key])) {
+    //     wpConf.entry[key] = wpConf.entry[key].map(val => path.resolve(projectPath, val));
+    //     wpConf.entry[key].unshift(pathToWPDSClient);
+    //   } else {
+    //     wpConf.entry[key] = [
+    //       pathToWPDSClient,
+    //       path.resolve(projectPath, wpConf.entry[key]),
+    //     ];
+    //   }
+    // });
 
     return {
       devServer: devServer(createWebpackCompiler(wpConf), wepackDevServer),
