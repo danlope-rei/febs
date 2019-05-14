@@ -7,7 +7,6 @@ const logger = require('./lib/logger');
 const lib = require('./lib');
 const merge = require('webpack-merge');
 const devServer = require('./lib/dev-server');
-const WDS = require('webpack-dev-server');
 
 const projectPath = process.cwd();
 
@@ -238,37 +237,14 @@ module.exports = function init(command, conf = {}) {
   };
 
   /**
-   * Start the webpack dev server.
-   * @param wepackDevServer The WDS module itself.
-   * @param confOverride The webpack conf override.
+   * Start the webpack dev server
+   * @param wds Optionally pass in fake wds (UT only)
    */
-  function startDevServer(wepackDevServer, confOverride) {
-
-    wepackDevServer = wepackDevServer || WDS;
-
-    const wpConf = getWebpackConfig(confOverride);
-
-    // Need to update the app entry for webpack-dev-server. This is necessary for
-    // the auto page refresh to happen. See: https://github.com/webpack/webpack-dev-server/blob/master/examples/node-api-simple/webpack.config.js
-    const pathToWPDSClient = `${path.resolve(projectPath, 'node_modules/webpack-dev-server/client')}?http://localhost:8080`;
-
-    // Object.keys(wpConf.entry).forEach((key) => {
-    //   if (Array.isArray(wpConf.entry[key])) {
-    //     wpConf.entry[key] = wpConf.entry[key].map(val => path.resolve(projectPath, val));
-    //     wpConf.entry[key].unshift(pathToWPDSClient);
-    //   } else {
-    //     wpConf.entry[key] = [
-    //       pathToWPDSClient,
-    //       path.resolve(projectPath, wpConf.entry[key]),
-    //     ];
-    //   }
-    // });
-
-    return {
-      devServer: devServer(createWebpackCompiler(wpConf), wepackDevServer),
-      wpConf
-    };
-  }
+  const startDevServer = wds => R.compose(
+      devServer.bind(null, wds),
+      createWebpackCompiler,
+      getWebpackConfig
+  );
 
   return {
     compile,
