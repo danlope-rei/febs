@@ -361,7 +361,7 @@ describe('FEBS Development Tests', function () {
       });
 
       // Assert dev server returned
-      const devServer = febs.startDevServer(FakeWDS)();
+      const devServer = febs.startDevServerFn(FakeWDS)();
       assert(devServer instanceof FakeWDS);
 
       // Assert webpack compiler passed to FakeWDS

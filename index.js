@@ -240,7 +240,7 @@ module.exports = function init(command, conf = {}) {
    * Start the webpack dev server
    * @param wds Optionally pass in fake wds (UT only)
    */
-  const startDevServer = wds => R.compose(
+  const startDevServerFn = wds => R.compose(
       devServer.bind(null, wds),
       createWebpackCompiler,
       getWebpackConfig
@@ -250,7 +250,7 @@ module.exports = function init(command, conf = {}) {
     compile,
     createCompiler,
     webpackCompileDone,
-    startDevServer,
+    startDevServerFn,
     getWebpackConfig,
     private: {
       cleanDir,
