@@ -242,8 +242,7 @@ module.exports = function init(command, conf = {}) {
    */
   const startDevServerFn = wds => R.compose(
       devServer.bind(null, wds),
-      createWebpackCompiler,
-      getWebpackConfig
+      createCompiler,
   );
 
   return {
