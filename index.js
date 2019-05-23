@@ -4,7 +4,7 @@ const wp = require('webpack');
 const R = require('ramda');
 const path = require('path');
 const logger = require('./lib/logger');
-const lib = require('./lib');
+const {test, runMochaTests} = require('./lib');
 const merge = require('webpack-merge');
 const devServer = require('./lib/dev-server');
 const WDS = require('webpack-dev-server');
@@ -270,6 +270,9 @@ module.exports = function init(command, conf = {}) {
     };
   }
 
+  const runTests = () => test(command);
+  // const runTests = () => runMochaTests(command);
+
   return {
     compile,
     createCompiler,
@@ -279,5 +282,6 @@ module.exports = function init(command, conf = {}) {
     private: {
       cleanDir,
     },
+    runTests,
   };
 };

@@ -12,7 +12,8 @@
     "test:dev": "NODE_ENV=dev mocha -t 8000 test/index-dev-*spec.js",
     "test:css": "NODE_ENV=dev mocha -t 8000 test/index-dev-css-spec.js",
     "test:prod": "NODE_ENV=prod mocha -t 8000 test/index-prod-spec.js",
-    "test": "npm run test:dev && npm run test:prod && npm run test:lib",
+    "test:test": "NODE_ENV=prod mocha -t 8000 test/test-spec.js",
+    "test": "npm run test:dev && npm run test:prod && npm run test:lib && npm run test:test",
     "test-watch": "mocha --watch",
     "test-inspect": "mocha --inspect-brk -t 8000",
     "cover:prod": "NODE_ENV=prod istanbul cover node_modules/.bin/_mocha -- -t 8000 test/index-prod-spec.js",
@@ -24,7 +25,7 @@
     "lint": "./node_modules/.bin/eslint webpack-config lib ./index.js"
   },
   "bin": {
-    "febs": "./bin/febs"
+    "febs": "./bin/febs.js"
   },
   "keywords": [],
   "license": "MIT",
@@ -32,6 +33,9 @@
   "dependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "@istanbuljs/nyc-config-babel": "^2.1.1",
+    "@rei/cdr-text": "^1.0.3",
+    "@rei/vunit": "^2.0.0",
     "ajv": "^6.10.0",
     "autoprefixer": "^7.2.6",
     "babel-loader": "^8.0.5",
@@ -40,12 +44,13 @@
     "cssnano": "^4.1.10",
     "file-loader": "^0.11.2",
     "fs-extra": "^4.0.3",
+    "glob": "^7.1.4",
     "istanbul": "~0.4.5",
     "less": "^2.3.1",
     "less-loader": "~4.1.0",
     "memory-fs": "^0.4.1",
     "mini-css-extract-plugin": "^0.5.0",
-    "mocha": "^5.2.0",
+    "minimist": "^1.2.0",
     "node-sass": "^4.9.3",
     "postcss-loader": "^3.0.0",
     "ramda": "^0.25.0",
@@ -65,6 +70,8 @@
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
     "sinon": "^6.1.4",
     "vue": "^2.5.17"
   },
