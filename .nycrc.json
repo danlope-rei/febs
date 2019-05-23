@@ -1,10 +1,11 @@
 {
     "extends": "@istanbuljs/nyc-config-babel",
     "include": [
-	"src/*.(js|vue)"
+	"src/*.(js|vue)",
+	"test/**/src/*.js"
     ],
     "exclude": [
 	"node_modules",
-	"test"
+	"test/**/*.spec.js"
     ]
 }
