@@ -86,6 +86,11 @@ module.exports = {
               [
                 "@babel/preset-env",
                 {
+                  // core-js polyfills
+                  "useBuiltIns": "usage",
+                  "corejs": 3,
+
+                  // browserslist
                   "targets": {
                     "browsers": [
                         "Chrome >= 70",

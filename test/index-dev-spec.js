@@ -28,6 +28,8 @@ describe('FEBS Development Tests', function () {
     compile = lib.createCompileFn(fs);
   });
 
+
+
   describe('ECMAScript', async function () {
     it('builds ES bundle', async function () {
       const compiled = await compile(lib.createConf({
@@ -70,6 +72,28 @@ describe('FEBS Development Tests', function () {
         assert.ok(o.stats.compilation.errors[0].message.includes('Unexpected token'));
       });
     });
+
+    it('polyfills based on supported browsers (IE11)', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app1: lib.absPath('fixtures/src/main-es-polyfill.js'),
+        },
+      }));
+
+      // Object.assign
+      assert(lib.compiledContains(compiled, {
+        entryName: /app1/,
+        content: /es.object.assign/,
+        fileName: /\.js$/,
+      }));
+
+      // Promise
+      assert(lib.compiledContains(compiled, {
+        entryName: /app1/,
+        content: /es.promise/,
+        fileName: /\.js$/,
+      }));
+    })
   });
 
 
