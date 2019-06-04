@@ -26,7 +26,7 @@ Its code falls into two categories
 - Produces a [Build Manifest](#build-manifest) so you can insert assets on your page using an [Asset Injector](#asset-injector)
 
 Learn more about [REI's Front-End Build System ](https://engineering.rei.com/frontend/the-rei-front-end-build-system.html)
-by checking out the introductory post on the [REI Co-op Engineering blog](https://engineering.rei.com)
+by checking out the introductory post on the [REI Co-op Engineering blog](https://engineering.rei.com).
 
 ## Getting Started
 
@@ -73,8 +73,9 @@ You can adjust these default configurations using the [febs configuration](#febs
 ## Build Features
 
 ### JavaScript
-  - [Vue](https://vuejs.org/)
-  - ES2015+ via [`@babel/preset-env`](https://babeljs.io/docs/en/babel-preset-env)
+  - Supports [Vue](https://vuejs.org/) [single file components](https://vuejs.org/v2/guide/single-file-components.html).
+  - Transpiles latest JavaScript via [@babel/preset-env](https://babeljs.io/docs/en/babel-preset-env)
+  - Automatically polyfills based on usage and [targeted browsers](https://github.com/rei/febs/blob/babel-polyfills/webpack-config/webpack.base.conf.js#L96).
 
 ### Style
   - [Less](http://lesscss.org/) - [deprecated](#deprecation)
