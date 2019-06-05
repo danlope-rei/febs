@@ -84,20 +84,21 @@ module.exports = {
           options: {
             presets: [
               [
-                "@babel/preset-env",
+                '@babel/preset-env',
                 {
-                  "targets": {
-                    "browsers": [
-                        "Chrome >= 70",
-                        "Firefox > 64",
-                        "iOS > 11",
-                        "Safari >= 9",
-                        "Explorer >= 11",
-                        "Edge >= 15"
-                    ]
-                  }
-                }]
+                  targets: {
+                    browsers: [
+                      'Chrome >= 70',
+                      'Firefox > 64',
+                      'iOS > 11',
+                      'Safari >= 9',
+                      'Explorer >= 11',
+                      'Edge >= 15',
+                    ],
+                  },
+                }],
             ],
+            // plugins: ['istanbul'],
             cacheDirectory: path.resolve('./node_modules/.babelcache'),
           },
         },

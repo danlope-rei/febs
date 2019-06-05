@@ -28,15 +28,13 @@ describe('FEBS Development Tests', function () {
     compile = lib.createCompileFn(fs);
   });
 
-  describe.only('ECMAScript', async function () {
-    it.only('builds ES bundle', async function () {
+  describe('ECMAScript', async function () {
+    it('builds ES bundle', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
           app: lib.absPath('fixtures/src/main-es2015.js'),
         },
       }));
-
-      console.log(compiled.code.app[0])
 
       assert.equal(compiled.code.app[0].filename, 'app.bundle.js');
       assert(compiled.code.app[0].content.includes('add: function add()'));
