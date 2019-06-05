@@ -1,73 +1,94 @@
 /* eslint-env node, mocha */
 /* eslint-disable prefer-arrow-callback, func-names */
 const assert = require('assert');
-const util = require('util');
-//const exec = util.promisify(require('child_process').exec);
-const exec = require('child_process').exec;
+const { exec } = require('child_process');
 
 describe.only('Client Unit Testing', function () {
-
   describe('Integration Tests', function () {
-
     describe('JS-only unit tests', function () {
-        it('should run specifying a directory', async function () {
-            const {stdout} = await exec('node bin/febs.js test test/fixtures/integration/js-only/test');
-            assert(stdout.includes('1 passing'));
+      it('should run specifying a directory', function (done) {
+        exec('node bin/febs.js test test/fixtures/integration/js-only/test', (error, stdout, stderr) => {
+          assert(stdout.includes('1 passing'));
+          done();
         });
+      });
 
-        it('should run coverage', async function () {
-            const {stdout} = await exec('node bin/febs.js test test/fixtures/integration/js-only/test --cover');
-            assert(stdout.includes('66.67'));
+      it('should run coverage', function (done) {
+        exec('node bin/febs.js test test/fixtures/integration/js-only/test --cover', (error, stdout, stderr) => {
+          assert(stdout.includes('% Stmts'));
+          assert(stdout.includes('66.67'));
+          done();
         });
+      });
 
-        it('should run with glob', async function () {
-            const {stdout} = await exec('node bin/febs.js test test/fixtures/integration/js-only/test/*.spec.js');
-            assert(stdout.includes('1 passing'));
+      it('should run with glob', function (done) {
+        exec('node bin/febs.js test test/fixtures/integration/js-only/test/*.spec.js', (error, stdout, stderr) => {
+          assert(stdout.includes('1 passing'));
+          done();
         });
+      });
 
-        it('should run if no dir specified and test dirs exist', async function () {
-            const {stdout} = await exec('cd test/fixtures/integration/js-only && node ../../../../bin/febs.js test');
-            assert(stdout.includes('1 passing'));
+      it('should run if no dir specified and test dirs exist', function (done) {
+        exec('cd test/fixtures/integration/js-only && node ../../../../bin/febs.js test', (error, stdout, stderr) => {
+          assert(stdout.includes('1 passing'));
+          done();
         });
+      });
 
-        it('should error if no dir specified and no test dirs exist', async function () {
-            try {
-                const { stdout, stderr } = await exec('cd test/fixtures/integration/js-only-no-test-dirs && node ../../../../bin/febs.js test');
-            } catch(err) {
-                assert(err.message.includes('Please specify test directory'));
-            }
+      it('should error if no dir specified and no test dirs exist', function (done) {
+        exec('cd test/fixtures/integration/js-only-no-test-dirs && node ../../../../bin/febs.js test', (error, stdout, stderr) => {
+          assert(error.message.includes('Please specify test directory'));
+          done();
         });
-
+      });
     });
 
-      describe.only('Vue only', async function () {
-          it('should run specifying a directory', function (done) {
-              //const {error, stdout, stderr} = await exec('node bin/febs.js test test/fixtures/integration/vue-only/test');
-              //console.log(error, stdout, stderr)
-              exec('node bin/febs.js test test/fixtures/integration/vue-only/test', (error, stdout, stderr) => {
-                  console.log(stdout)
-                  assert(stdout.includes('1 passing'));
-                  done();
-              });
-          });
-
-          xit('Happy Path - coverage', function () {
-              const ret = execSync('npx febs test test1-js-only --cover');
-              assert(ret.includes('66.67'));
-          });
+    describe('Vue only', function () {
+      it('should run specifying a directory', function (done) {
+        exec('node bin/febs.js test test/fixtures/integration/vue-only/test', (error, stdout, stderr) => {
+          assert(stdout.includes('1 passing'));
+          done();
+        });
       });
 
-      describe('Vue and JS', function () {
-          it('Happy Path', function () {
-              const ret = execSync('npx febs test test1-js-only');
-              assert(ret.includes('1 passing'));
-          });
-
-          it('Happy Path - coverage', function () {
-              const ret = execSync('npx febs test test1-js-only --cover');
-              assert(ret.includes('66.67'));
-          });
+      it('should run coverage', function (done) {
+        exec('node bin/febs.js test test/fixtures/integration/vue-only/test --cover', (error, stdout, stderr) => {
+          assert(stdout.includes('% Stmts'));
+          assert(stdout.includes('50'));
+          done();
+        });
       });
+
+      it('should run with glob', function (done) {
+        exec('node bin/febs.js test test/fixtures/integration/vue-only/test/*.vue-spec.js', (error, stdout, stderr) => {
+          assert(stdout.includes('1 passing'));
+          done();
+        });
+      });
+    });
+
+    describe('Vue and JS', function () {
+      it('should run specifying a directory', function (done) {
+        exec('node bin/febs.js test test/fixtures/integration/js-and-vue/test', (error, stdout, stderr) => {
+          assert(stdout.includes('2 passing'));
+          done();
+        });
+      });
+
+      it('should run run coverage', function (done) {
+        exec('node bin/febs.js test test/fixtures/integration/js-and-vue/test --cover', (error, stdout, stderr) => {
+          assert(stdout.includes('% Stmts'));
+          assert(stdout.includes('66.67'));
+          done();
+        });
+      });
+
+      it('should run with glob', function (done) {
+        exec('node bin/febs.js test "test/fixtures/integration/js-and-vue/test/*.js"', (error, stdout, stderr) => {
+          assert(stdout.includes('2 passing'));
+          done();
+        });
+      });
+    });
   });
-
 });
