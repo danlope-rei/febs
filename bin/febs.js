@@ -43,7 +43,7 @@ program
     if (command.devServer) {
       febs(command, {
         logLevel: command.parent.verbose ? 'verbose' : 'info',
-      }).startDevServer();
+      }).startDevServerFn()();
     } else {
       febs(command, {
         logLevel: command.parent.verbose ? 'verbose' : 'info',

@@ -6,6 +6,7 @@ const assert = require('assert');
 const path = require('path');
 const sinon = require('sinon');
 const lib = require('./lib');
+const webpack = require('webpack');
 
 // Dependencies used by tests assertions
 const devServerFn = require('../lib/dev-server');
@@ -343,41 +344,30 @@ describe('FEBS Development Tests', function () {
   });
 
   describe('Dev Server', function () {
-    const devServer = devServerFn({}, function () {
-      this.app = {};
+    // So we aren't starting an actual server during unit tests.
+    let FakeWDS;
 
-      this.app.use = function () {};
-      this.app.get = function () {};
-      this.app.set = function () {};
-      this.app.engine = function () {};
-
-      this.listen = (port, ip, cb) => {
-        cb();
-      };
+    beforeEach(() => FakeWDS = function (compiler) {
+        this.listen = () => {};
+        this.compiler = compiler;
     });
 
     it('should create new server', function () {
-      assert(devServer);
+      const devServer = devServerFn(FakeWDS, () => {});
+      assert(devServer instanceof FakeWDS);
     });
 
-    it('should pass modified conf to dev server', function () {
+    it('should pass in compiler and webpack conf', function () {
       const febs = febsModule('dev', {
         fs,
       });
 
-      // So we aren't starting an actual server during unit tests.
-      const FakeWDS = function () {
-        this.listen = () => {}
-      };
-
       // Assert dev server returned
-      const { devServer, wpConf } = febs.startDevServer(FakeWDS);
+      const devServer = febs.startDevServerFn(FakeWDS)();
       assert(devServer instanceof FakeWDS);
 
-      // Assert modified webpack conf returned.
-      const pathToWPDSClient = `${path.join(__dirname, '..', 'node_modules/webpack-dev-server/client')}?http://localhost:8080`;
-      assert.equal(wpConf.entry.app.length, 3);
-      assert.equal(wpConf.entry.app[0], pathToWPDSClient);
+      // Assert webpack compiler passed to FakeWDS
+      assert(devServer.compiler instanceof webpack.Compiler);
     });
   });
 });

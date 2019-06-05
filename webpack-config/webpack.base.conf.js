@@ -82,8 +82,22 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            // Ignore client's .babelrc and use the .babelrc in @rei/febs.
-            babelrcRoots: [path.join(__dirname, '..')],
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  "targets": {
+                    "browsers": [
+                        "Chrome >= 70",
+                        "Firefox > 64",
+                        "iOS > 11",
+                        "Safari >= 9",
+                        "Explorer >= 11",
+                        "Edge >= 15"
+                    ]
+                  }
+                }]
+            ],
             cacheDirectory: path.resolve('./node_modules/.babelcache'),
           },
         },

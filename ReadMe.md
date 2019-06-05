@@ -52,7 +52,7 @@ second argument.
 
 #### Update or use [defaults](#default-configuration) to specify paths for the CSS and JS you want to compile and [run](#run)
 
-See [Command-line Interface]() for more details and additional ways to run.
+See [Command-line Interface](#command-line-interface) for more details and additional ways to run.
 
 ## Default Configuration
 
