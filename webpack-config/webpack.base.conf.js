@@ -78,7 +78,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        include: () => (process.env.febs_test ? path.join(projectPath, 'test', 'fixtures') : [path.join(projectPath, 'src'), /node_modules\/@rei/]),
         use: {
           loader: 'babel-loader',
           options: {
