@@ -4,9 +4,7 @@
 
 ## Summary
 
-`FEBS` is an extensible [webpack](https://webpack.js.org/)\-based [front-end build system]
-(https://engineering.rei
-.com/frontend/the-rei-front-end-build-system.html) 
+`FEBS` is an extensible [webpack](https://webpack.js.org/)\-based [front-end build system](https://engineering.rei.com/frontend/the-rei-front-end-build-system.html) 
 designed to be used by a community of front-end developers or a series of projects using a similar set of technologies in order to reduce duplicate effort on build configuration.
 
 Its code falls into two categories
@@ -26,7 +24,7 @@ Its code falls into two categories
 - Produces a [Build Manifest](#build-manifest) so you can insert assets on your page using an [Asset Injector](#asset-injector)
 
 Learn more about [REI's Front-End Build System ](https://engineering.rei.com/frontend/the-rei-front-end-build-system.html)
-by checking out the introductory post on the [REI Co-op Engineering blog](https://engineering.rei.com)
+by checking out the introductory post on the [REI Co-op Engineering blog](https://engineering.rei.com).
 
 ## Getting Started
 
