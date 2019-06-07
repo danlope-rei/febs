@@ -7,6 +7,7 @@ const path = require('path');
 const sinon = require('sinon');
 const lib = require('./lib');
 const webpack = require('webpack');
+const fsExtra = require('fs-extra');
 
 // Dependencies used by tests assertions
 const devServerFn = require('../lib/dev-server');
@@ -28,8 +29,6 @@ describe('FEBS Development Tests', function () {
     compile = lib.createCompileFn(fs);
   });
 
-
-
   describe('ECMAScript', async function () {
     it('builds ES bundle', async function () {
       const compiled = await compile(lib.createConf({
@@ -40,6 +39,25 @@ describe('FEBS Development Tests', function () {
 
       assert.equal(compiled.code.app[0].filename, 'app.bundle.js');
       assert(compiled.code.app[0].content.includes('add: function add()'));
+    });
+
+    it('transpiles ES from @rei namespace only', async function () {
+      // Create temp @rei and non-@rei namespace dirs.
+      fsExtra.ensureSymlinkSync(path.join(__dirname, 'test-modules/@rei'), path.join(__dirname, '../node_modules/@rei'));
+      fsExtra.ensureSymlinkSync(path.join(__dirname, 'test-modules/some-module'), path.join(__dirname, '../node_modules/some-module'));
+
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/main-es2015-rei-namespace.js'),
+        },
+      }));
+
+      assert(compiled.code.app[0].content.includes('add3: function add3'));
+      assert(!compiled.code.app[0].content.includes('add4: function add4'));
+
+      // Cleanup
+      fsExtra.unlinkSync(path.join(__dirname, '../node_modules/some-module'));
+      fsExtra.unlinkSync(path.join(__dirname, '../node_modules/@rei'));
     });
 
     it('builds multiple ES bundles', async function () {

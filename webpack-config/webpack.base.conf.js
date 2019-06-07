@@ -78,30 +78,34 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        include: () => (process.env.febs_test ? path.join(projectPath, 'test', 'fixtures') : [path.join(projectPath, 'src'), /node_modules\/@rei/]),
+        include: [
+          path.join(projectPath, 'src'),
+          path.join(projectPath, 'test', 'fixtures'),
+          /@rei/,
+        ],
         use: {
           loader: 'babel-loader',
           options: {
             presets: [
               [
-                "@babel/preset-env",
+                '@babel/preset-env',
                 {
                   // core-js polyfills
-                  "useBuiltIns": "usage",
-                  "corejs": 3,
+                  useBuiltIns: 'usage',
+                  corejs: 3,
 
                   // browserslist
-                  "targets": {
-                    "browsers": [
-                        "Chrome >= 70",
-                        "Firefox > 64",
-                        "iOS > 11",
-                        "Safari >= 9",
-                        "Explorer >= 11",
-                        "Edge >= 15"
-                    ]
-                  }
-                }]
+                  targets: {
+                    browsers: [
+                      'Chrome >= 70',
+                      'Firefox > 64',
+                      'iOS > 11',
+                      'Safari >= 9',
+                      'Explorer >= 11',
+                      'Edge >= 15',
+                    ],
+                  },
+                }],
             ],
             cacheDirectory: path.resolve('./node_modules/.babelcache'),
           },
