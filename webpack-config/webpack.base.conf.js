@@ -33,6 +33,13 @@ const miniCSSExtract = new MiniCssExtractPlugin({
   filename: env === 'dev' ? '[name].bundle.css' : '[name].bundle-[contenthash].css',
 });
 
+// Paths to transpile. (Babel, Vue)
+const includePaths = [
+  path.join(projectPath, 'src'),
+  path.join(projectPath, 'test', 'fixtures'),
+  path.join(projectPath, 'node_modules', '@rei'),
+];
+
 module.exports = {
 
   entry: {
@@ -78,11 +85,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        include: [
-          path.join(projectPath, 'src'),
-          path.join(projectPath, 'test', 'fixtures'),
-          /@rei/,
-        ],
+        include: includePaths,
         use: {
           loader: 'babel-loader',
           options: {
@@ -114,7 +117,7 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
-        include: () => (process.env.febs_test ? path.join(projectPath, 'test', 'fixtures') : [path.join(projectPath, 'src'), /node_modules\/@rei/]),
+        include: includePaths,
       },
       {
         test: /\.scss$/,

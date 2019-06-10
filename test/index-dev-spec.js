@@ -42,9 +42,14 @@ describe('FEBS Development Tests', function () {
     });
 
     it('transpiles ES from @rei namespace only', async function () {
-      // Create temp @rei and non-@rei namespace dirs.
-      fsExtra.ensureSymlinkSync(path.join(__dirname, 'test-modules/@rei'), path.join(__dirname, '../node_modules/@rei'));
-      fsExtra.ensureSymlinkSync(path.join(__dirname, 'test-modules/some-module'), path.join(__dirname, '../node_modules/some-module'));
+      // Create temp @rei and non-@rei namespace modules in node_modules
+      const srcReiNamespace = path.join(__dirname, 'test-modules/@rei');
+      const destReiNamespace = path.join(__dirname, '../node_modules/@rei');
+      const srcNonReiNamespace = path.join(__dirname, 'test-modules/some-module');
+      const destNonReiNamespace = path.join(__dirname, '../node_modules/some-module');
+
+      fsExtra.copySync(srcReiNamespace, destReiNamespace);
+      fsExtra.copySync(srcNonReiNamespace, destNonReiNamespace);
 
       const compiled = await compile(lib.createConf({
         entry: {
@@ -55,9 +60,9 @@ describe('FEBS Development Tests', function () {
       assert(compiled.code.app[0].content.includes('add3: function add3'));
       assert(!compiled.code.app[0].content.includes('add4: function add4'));
 
-      // Cleanup
-      fsExtra.unlinkSync(path.join(__dirname, '../node_modules/some-module'));
-      fsExtra.unlinkSync(path.join(__dirname, '../node_modules/@rei'));
+      // Cleanup temp modules
+      fsExtra.removeSync(destReiNamespace);
+      fsExtra.removeSync(destNonReiNamespace);
     });
 
     it('builds multiple ES bundles', async function () {
