@@ -7,6 +7,7 @@ const path = require('path');
 const sinon = require('sinon');
 const lib = require('./lib');
 const webpack = require('webpack');
+const fsExtra = require('fs-extra');
 
 // Dependencies used by tests assertions
 const devServerFn = require('../lib/dev-server');
@@ -40,6 +41,30 @@ describe('FEBS Development Tests', function () {
       assert(compiled.code.app[0].content.includes('add: function add()'));
     });
 
+    it('transpiles ES from @rei namespace only', async function () {
+      // Create temp @rei and non-@rei namespace modules in node_modules
+      const srcReiNamespace = path.join(__dirname, 'test-modules/@rei');
+      const destReiNamespace = path.join(__dirname, '../node_modules/@rei');
+      const srcNonReiNamespace = path.join(__dirname, 'test-modules/some-module');
+      const destNonReiNamespace = path.join(__dirname, '../node_modules/some-module');
+
+      fsExtra.copySync(srcReiNamespace, destReiNamespace);
+      fsExtra.copySync(srcNonReiNamespace, destNonReiNamespace);
+
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app: lib.absPath('fixtures/src/main-es2015-rei-namespace.js'),
+        },
+      }));
+
+      assert(compiled.code.app[0].content.includes('add3: function add3'));
+      assert(!compiled.code.app[0].content.includes('add4: function add4'));
+
+      // Cleanup temp modules
+      fsExtra.removeSync(destReiNamespace);
+      fsExtra.removeSync(destNonReiNamespace);
+    });
+
     it('builds multiple ES bundles', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
@@ -70,6 +95,28 @@ describe('FEBS Development Tests', function () {
         assert.ok(o.stats.compilation.errors[0].message.includes('Unexpected token'));
       });
     });
+
+    it('polyfills based on supported browsers (IE11)', async function () {
+      const compiled = await compile(lib.createConf({
+        entry: {
+          app1: lib.absPath('fixtures/src/main-es-polyfill.js'),
+        },
+      }));
+
+      // Object.assign
+      assert(lib.compiledContains(compiled, {
+        entryName: /app1/,
+        content: /es.object.assign/,
+        fileName: /\.js$/,
+      }));
+
+      // Promise
+      assert(lib.compiledContains(compiled, {
+        entryName: /app1/,
+        content: /es.promise/,
+        fileName: /\.js$/,
+      }));
+    })
   });
 
 
