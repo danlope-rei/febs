@@ -95,7 +95,7 @@ module.exports = {
                 {
                   // core-js polyfills
                   useBuiltIns: 'usage',
-                  corejs: 3,
+                  corejs: 2,
 
                   // browserslist
                   targets: {
