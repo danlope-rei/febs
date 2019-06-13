@@ -39,6 +39,12 @@ const excludePaths = [
   /node_modules\/(?!(@rei)\/).*/,
 ];
 
+const includePaths = [
+  path.join(projectPath, 'src'),
+  path.join(projectPath, 'test', 'fixtures'),
+  path.join(projectPath, 'node_modules', '@rei'),
+];
+
 
 module.exports = {
 
@@ -86,6 +92,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: excludePaths,
+        include: includePaths,
         use: {
           loader: 'babel-loader',
           options: {
@@ -96,6 +103,8 @@ module.exports = {
                   // core-js polyfills
                   useBuiltIns: 'usage',
                   corejs: 2,
+
+                  modules: 'commonjs',
 
                   // browserslist
                   targets: {
@@ -118,6 +127,7 @@ module.exports = {
         test: /\.vue$/,
         loader: 'vue-loader',
         exclude: excludePaths,
+        include: includePaths,
       },
       {
         test: /\.scss$/,
