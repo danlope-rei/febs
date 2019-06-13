@@ -56,9 +56,12 @@ describe('FEBS Development Tests', function () {
           app: lib.absPath('fixtures/src/main-es2015-rei-namespace.js'),
         },
       }));
-
+	
+      // @rei namespace should be transpiled	    
       assert(compiled.code.app[0].content.includes('add3: function add3'));
-      assert(!compiled.code.app[0].content.includes('add4: function add4'));
+      
+	// non-@rei namespace should not be transpiled    
+	assert(!compiled.code.app[0].content.includes('add4: function add4'));
 
       // Cleanup temp modules
       fsExtra.removeSync(destReiNamespace);
@@ -106,14 +109,14 @@ describe('FEBS Development Tests', function () {
       // Object.assign
       assert(lib.compiledContains(compiled, {
         entryName: /app1/,
-        content: /es.object.assign/,
+        content: /es6.object.assign/,
         fileName: /\.js$/,
       }));
 
       // Promise
       assert(lib.compiledContains(compiled, {
         entryName: /app1/,
-        content: /es.promise/,
+        content: /es6.promise/,
         fileName: /\.js$/,
       }));
     })

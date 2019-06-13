@@ -33,12 +33,18 @@ const miniCSSExtract = new MiniCssExtractPlugin({
   filename: env === 'dev' ? '[name].bundle.css' : '[name].bundle-[contenthash].css',
 });
 
-// Paths to transpile. (Babel, Vue)
+// Paths to exclude from transpilation
+const excludePaths = [
+  // exclude everything under node_modules except what's in (..). You can logical OR within the (..)
+  /node_modules\/(?!(@rei)\/).*/,
+];
+
 const includePaths = [
   path.join(projectPath, 'src'),
   path.join(projectPath, 'test', 'fixtures'),
   path.join(projectPath, 'node_modules', '@rei'),
 ];
+
 
 module.exports = {
 
@@ -85,6 +91,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
+        exclude: excludePaths,
         include: includePaths,
         use: {
           loader: 'babel-loader',
@@ -95,7 +102,9 @@ module.exports = {
                 {
                   // core-js polyfills
                   useBuiltIns: 'usage',
-                  corejs: 3,
+                  corejs: 2,
+
+                  modules: 'commonjs',
 
                   // browserslist
                   targets: {
@@ -117,6 +126,7 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
+        exclude: excludePaths,
         include: includePaths,
       },
       {
