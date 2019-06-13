@@ -40,6 +40,11 @@ const includePaths = [
   path.join(projectPath, 'node_modules', '@rei'),
 ];
 
+const excludePaths = [
+  /node_modules\/@rei\/.*\/node_modules/,
+];
+
+
 module.exports = {
 
   entry: {
@@ -85,6 +90,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
+        exclude: excludePaths,
         include: includePaths,
         use: {
           loader: 'babel-loader',
