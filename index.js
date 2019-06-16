@@ -3,10 +3,11 @@
 const wp = require('webpack');
 const R = require('ramda');
 const path = require('path');
+const merge = require('webpack-merge');
 const logger = require('./lib/logger');
 const lib = require('./lib');
-const merge = require('webpack-merge');
 const devServer = require('./lib/dev-server');
+const fsExtra = require('fs-extra');
 
 const projectPath = process.cwd();
 
@@ -21,8 +22,6 @@ const projectPath = process.cwd();
  * @param conf.fs The file system (passed in from unit tests.)
  */
 module.exports = function init(command, conf = {}) {
-  let ssr = false;
-
   const febsConfigArg = conf;
 
   // Allow for in-memory fs for testing.
@@ -65,6 +64,8 @@ module.exports = function init(command, conf = {}) {
     return R.merge(febsConfig, febsConfigFileJSON);
   };
 
+  const isSSR = () => getFebsConfig().ssr;
+
   const getPackageName = () => {
     const projectPackageJson = path.join(projectPath, 'package.json');
     return require(projectPackageJson).name;
@@ -77,10 +78,8 @@ module.exports = function init(command, conf = {}) {
 
     // working to style guide this
     if (febsConfig.entry) {
-      for (let key in febsConfig.entry) {
-        febsConfig.entry[key] = febsConfig.entry[key].map(function(entryFile) {
-          return path.resolve(projectPath, entryFile);
-        });
+      for (const key in febsConfig.entry) {
+        febsConfig.entry[key] = febsConfig.entry[key].map(entryFile => path.resolve(projectPath, entryFile));
       }
       wpConf.entry = febsConfig.entry;
     }
@@ -88,28 +87,58 @@ module.exports = function init(command, conf = {}) {
     return wpConf;
   };
 
-  const getWebpackConfig = (confOverride) => {
-    const webpackConfigBase = require('./webpack-config/webpack.base.conf');
+  /**
+   * Modifications needed for SSR.
+   *
+   * @param ssr
+   * @param wpConf
+   * @returns {*}
+   */
+  const addVueSSRToWebpackConfig = R.curry((ssr, wpConf) => {
+    if (!ssr) {
+      return wpConf;
+    }
+
+    // Remove Manifest plugin during SSR build.
+    const plugins = wpConf.plugins
+      .filter(plugin => plugin.constructor.name !== 'ManifestPlugin');
+
+    const wpConfNoManifest = R.merge(R.dissoc('plugins', wpConf), {
+      plugins,
+    });
+
+    // Add SSR config.
     const webpackServerConf = require('./webpack-config/webpack.server.conf');
+    return merge.smartStrategy({
+      entry: 'replace',
+      plugins: 'append',
+    })(wpConfNoManifest, webpackServerConf);
+  });
+
+  /**
+   * Get the webpack config using:
+   *  - webpack.base.conf.js
+   *  - confOverrides
+   *  - febs-config.json
+   *
+   * @param confOverride Optional conf overrides that comes in either from
+   * webpack.overrides.conf or from unit tests.
+   */
+  const getWebpackConfigBase = (confOverride) => {
+    const webpackConfigBase = require('./webpack-config/webpack.base.conf');
     const configsToMerge = [webpackConfigBase];
 
-    let wpMergeConf = {
+    // Config for webpack-merge
+    const wpMergeConf = {
       entry: 'replace',
     };
 
     // Overrides config.
     configsToMerge.push(getOverridesConf(confOverride));
 
-    if (ssr) {
-      configsToMerge.push(webpackServerConf);
-      wpMergeConf = R.merge(wpMergeConf, {
-        plugins: 'append',
-      });
-    }
-
     const wpConf = merge.smartStrategy(wpMergeConf)(configsToMerge);
 
-    // Force output path to always be the same
+    // Force output path to always be the same. (Overrideable in febs-config)
     wpConf.output.path = webpackConfigBase.output.path;
 
     // Ensure febs config makes the final configurable decisions
@@ -117,17 +146,41 @@ module.exports = function init(command, conf = {}) {
   };
 
   /**
- * Create's compiler instance with appropriate environmental
- * webpack.conf merged with the webpack.overrides.
- *
- * @param {Object} wpConf The final webpack conf object.
- * @return {Object} The webpack compiler.
- */
+   * Get the webpack config. This depends upon:
+   *  - the base webpack config.
+   *  - the webpack server config for optional SSR (ssr property in febs-config)
+   *  - any other overrides coming in from febs-config.json.
+   *  - optional overrides passed in from unit tests.
+   */
+  const getWebpackConfigFn = ssr => R.compose(
+    addVueSSRToWebpackConfig(ssr),
+    getWebpackConfigBase
+  );
+
+  /**
+   * Configure
+   * @param ssr Whether or not to include SSR webpack build config.
+   * @returns {function} A function that takes overrides argument
+   * and returns the final webpack config.
+   */
+  const getWebpackConfig = ssr => getWebpackConfigFn(ssr);
+
+  /**
+   * Create's compiler instance with appropriate environmental
+   * webpack.conf merged with the webpack.overrides/febs-config/SSR configs.
+   *
+   * @param {WebpackOptions} wpConf The final webpack config object.
+   * @return {Object} The webpack compiler instance.
+   */
   const createWebpackCompiler = wpConf => wp(wpConf);
 
-  const createCompiler = R.compose(
+  /**
+   * Create the webpack compiler.
+   * @param {boolean} ssr Whether or not to include Vue SSR build.
+   */
+  const createCompiler = ssr => R.compose(
     createWebpackCompiler,
-    getWebpackConfig
+    getWebpackConfig(ssr)
   );
 
   /**
@@ -174,37 +227,20 @@ module.exports = function init(command, conf = {}) {
   };
 
   /**
-   * Recursive directory clean. Does not delete parent directory.
-   * @param dir The directory to clean.
+   * Clean the build destination directory.
    */
-  const cleanDir = function cleanDir(dir = getWebpackConfig().output.path) {
-    if (!dir || !fs.existsSync(dir)) {
-      return false;
-    }
-
-    const items = fs.readdirSync(dir).map(i => path.resolve(dir, i));
-
-    items.forEach((item) => {
-      if (fs.lstatSync(item).isFile()) {
-        fs.unlinkSync(item);
-      } else {
-        const nextItems = fs.readdirSync(item);
-        if (nextItems.length !== 0) {
-          cleanDir(item);
-        }
-        fs.rmdirSync(item);
-      }
-    });
-    return true;
-  };
+  const cleanDestDir = fsExtra.emptyDirSync.bind(null, getWebpackConfig(false)().output.path);
 
   /**
    * Runs the webpack compile either via 'run' or 'watch'.
-   * @returns {*} The webpack compiler instance.
+   * @param ssr Whether or not to run SSR build.
+   * @returns The webpack compiler instance.
    */
-  const runCompile = () => {
+  const runCompile = (ssr) => {
     const compilerFn = command.watch ? 'watch' : 'run';
-    const compiler = createCompiler();
+
+    const compiler = createCompiler(ssr)();
+
     if (compilerFn === 'run') {
       compiler[compilerFn](webpackCompileDone);
     } else {
@@ -224,15 +260,14 @@ module.exports = function init(command, conf = {}) {
    * @returns {Object} Webpack compiler instance.
    */
   const compile = function compile() {
-    cleanDir();
+    cleanDestDir();
 
     // Create client-side bundle
-    runCompile();
+    runCompile(false);
 
-    // Create vue-ssr-server-bundle.json
-    ssr = getFebsConfig().ssr;
-    if (ssr) {
-      runCompile();
+    // If SSRing, create vue-ssr-server-bundle.json.
+    if (isSSR()) {
+      runCompile(true);
     }
   };
 
@@ -241,8 +276,8 @@ module.exports = function init(command, conf = {}) {
    * @param wds Optionally pass in fake wds (UT only)
    */
   const startDevServerFn = wds => R.compose(
-      devServer.bind(null, wds),
-      createCompiler,
+    devServer.bind(null, wds),
+    createCompiler(false),
   );
 
   return {
@@ -251,8 +286,7 @@ module.exports = function init(command, conf = {}) {
     webpackCompileDone,
     startDevServerFn,
     getWebpackConfig,
-    private: {
-      cleanDir,
-    },
+    addVueSSRToWebpackConfig,
+    getWebpackConfigCurried: getWebpackConfigFn,
   };
 };

@@ -242,14 +242,55 @@ describe('FEBS Development Tests', function () {
     });
   });
 
+  describe('addVueSSRToWebpackConfig', function () {
+    it('should add VueSSRServerPlugin to webpack config', function () {
+      const febs = febsModule({
+        fs,
+      });
+
+      const wpConfig = febs.addVueSSRToWebpackConfig(true, wpDevConf);
+
+      assert(wpConfig.plugins.some(plugin => plugin.constructor.name === 'VueSSRServerPlugin'));
+      assert.equal(wpConfig.output.libraryTarget, 'commonjs2');
+    });
+
+    it('should not add VueSSRServerPlugin', function () {
+      const febs = febsModule({
+        fs,
+      });
+
+      const wpConfig = febs.addVueSSRToWebpackConfig(false, wpDevConf);
+
+      assert(wpConfig.plugins.every(plugin => plugin.constructor.name !== 'VueSSRServerPlugin'));
+    });
+  });
+
   describe('getWebpackConfig', function () {
     it('should not return multiple plugin entries after merging confs', function () {
       const febs = febsModule({
         fs,
       });
       const expectedLength = wpDevConf.module.rules.length;
-      const wpConfig = febs.getWebpackConfig(wpDevConf);
+      const wpConfig = febs.getWebpackConfig(false)(wpDevConf);
       assert.equal(expectedLength, wpConfig.module.rules.length);
+    });
+
+    it('should not contain ManifestPlugin if SSR build', function () {
+      const febs = febsModule({
+        fs,
+      });
+
+      const wpConfig = febs.getWebpackConfigCurried(true)(wpDevConf);
+      assert(wpConfig.plugins.every(plugin => plugin.constructor.name !== 'ManifestPlugin'));
+    });
+
+    it('should contain ManifestPlugin if not SSR build', function () {
+      const febs = febsModule({
+        fs,
+      });
+
+      const wpConfig = febs.getWebpackConfigCurried(false)(wpDevConf);
+      assert(wpConfig.plugins.some(plugin => plugin.constructor.name === 'ManifestPlugin'));
     });
   });
 
@@ -279,7 +320,7 @@ describe('FEBS Development Tests', function () {
         fs,
       });
 
-      const webpackConfig = febs.getWebpackConfig();
+      const webpackConfig = febs.getWebpackConfig(false)(wpDevConf);
 
       assert.equal(webpackConfig.output.path, path.resolve(desiredOutputPath, '@rei', 'febs'));
     });
@@ -294,7 +335,7 @@ describe('FEBS Development Tests', function () {
           ],
         },
         fs,
-      }).getWebpackConfig();
+      }).getWebpackConfig(false)(wpDevConf);
 
       assert(webpackConfig.entry.app[0].endsWith(desiredEntryPath));
     });
@@ -307,87 +348,6 @@ describe('FEBS Development Tests', function () {
           app1: lib.absPath('fixtures/src/main-es2015-syntax-errors.js'),
         },
       })).then((o) => { assert.equal(o.exitCode, 0); });
-    });
-  });
-
-  describe('Utility functions', function () {
-    describe('cleanDir', function () {
-      /*
-        Test directory structure:
-                /parent
-                   /dir1
-                      a
-                      b
-                   /dir2
-                      /dir3
-                        c
-                        d
-       */
-
-      it('should return error if trying to delete non-existent directory', function () {
-        // Create test dir structure
-        fs.mkdirpSync('/parent');
-
-        const febs = febsModule({
-          fs,
-        });
-
-        assert(!febs.private.cleanDir('/parent2'), /Non-existent directory/);
-      });
-
-      it('should delete contents of a directory, leaving the parent', function () {
-        // Need to stub lstatSync().isFile() values since lstatSync doesn't
-        // exist in memory-fs.
-        const lstatSyncStub = sinon.stub();
-
-        lstatSyncStub.withArgs('/parent/dir1/a').returns({
-          isFile: () => true,
-        });
-        lstatSyncStub.withArgs('/parent/dir1/b').returns({
-          isFile: () => true,
-        });
-        lstatSyncStub.withArgs('/parent/dir2/dir3/c').returns({
-          isFile: () => true,
-        });
-
-        lstatSyncStub.withArgs('/parent/dir2/dir3/d').returns({
-          isFile: () => true,
-        });
-
-        lstatSyncStub.withArgs('/parent').returns({
-          isFile: () => false,
-        });
-
-        lstatSyncStub.withArgs('/parent/dir1').returns({
-          isFile: () => false,
-        });
-
-        lstatSyncStub.withArgs('/parent/dir2').returns({
-          isFile: () => false,
-        });
-
-        lstatSyncStub.withArgs('/parent/dir2/dir3').returns({
-          isFile: () => false,
-        });
-
-        // Create test dir structure
-        fs.mkdirpSync('/parent/dir1');
-        fs.mkdirpSync('/parent/dir2/dir3');
-        fs.writeFileSync('/parent/dir1/a', 'a');
-        fs.writeFileSync('/parent/dir1/b', 'b');
-        fs.writeFileSync('/parent/dir2/dir3/c', 'c');
-        fs.writeFileSync('/parent/dir2/dir3/d', 'd');
-
-        fs.lstatSync = lstatSyncStub;
-
-        const febs = febsModule('build', {
-          fs,
-        });
-
-        assert.deepEqual(fs.readdirSync('/parent'), ['dir1', 'dir2']);
-        febs.private.cleanDir('/parent');
-        assert.deepEqual(fs.readdirSync('/parent'), []);
-      });
     });
   });
 
