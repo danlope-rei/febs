@@ -71,20 +71,36 @@ module.exports = function init(command, conf = {}) {
     return require(projectPackageJson).name;
   };
 
-  // Applies febs-config to the webpack configuration
+  /**
+   * Applies febs-config to the webpack configuration
+   * @param febsConfig The febs-config.json object.
+   * @param wpConf The webpack config.
+   * @returns {object} The webpack config with merged febs-config object.
+   */
   const febsConfigMerge = (febsConfig, wpConf) => {
-    // eslint-disable-next-line no-param-reassign
-    wpConf.output.path = path.resolve(projectPath, febsConfig.output.path, getPackageName());
+    // Update the output.path to what is in febs-config
+    const wpConfNewOutputPath = R.mergeDeepRight(wpConf, {
+      output: {
+        path: path.resolve(projectPath, febsConfig.output.path, getPackageName()),
+      },
+    });
 
-    // working to style guide this
+    // If febsConfig.entry, replace wpConf.entry with it using fully qualified paths.
     if (febsConfig.entry) {
-      for (const key in febsConfig.entry) {
-        febsConfig.entry[key] = febsConfig.entry[key].map(entryFile => path.resolve(projectPath, entryFile));
-      }
-      wpConf.entry = febsConfig.entry;
+      const { entry } = febsConfig;
+      const newEntries = R.zipObj(
+        R.keys(entry),
+        R.values(entry).map(
+          entryArr => entryArr.map(entryPath => path.resolve(projectPath, entryPath))
+        )
+      );
+
+      return R.merge(R.dissoc('entry', wpConfNewOutputPath), {
+        entry: newEntries,
+      });
     }
 
-    return wpConf;
+    return wpConfNewOutputPath;
   };
 
   /**
