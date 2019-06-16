@@ -91,7 +91,9 @@ module.exports = function init(command, conf = {}) {
       const newEntries = R.zipObj(
         R.keys(entry),
         R.values(entry).map(
-          entryArr => entryArr.map(entryPath => path.resolve(projectPath, entryPath))
+          entryArr => entryArr.map(
+            entryPath => path.resolve(projectPath, entryPath)
+          )
         )
       );
 
