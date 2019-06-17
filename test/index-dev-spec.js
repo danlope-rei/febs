@@ -2,7 +2,7 @@
 /* eslint-disable prefer-arrow-callback, func-names */
 
 // Dependencies.
-const assert = require('assert');
+const assert = require('assert').strict;
 const path = require('path');
 const sinon = require('sinon');
 const lib = require('./lib');
@@ -18,6 +18,8 @@ const febsModule = require('../index');
 describe('FEBS Development Tests', function () {
   let compile;
   let fs;
+
+  logger.setLogLevel('warn'); // Suppress info messages
 
   beforeEach(function () {
     process.env.FEBS_TEST = true;
@@ -56,12 +58,12 @@ describe('FEBS Development Tests', function () {
           app: lib.absPath('fixtures/src/main-es2015-rei-namespace.js'),
         },
       }));
-	
-      // @rei namespace should be transpiled	    
+
+      // @rei namespace should be transpiled
       assert(compiled.code.app[0].content.includes('add3: function add3'));
-      
-	// non-@rei namespace should not be transpiled    
-	assert(!compiled.code.app[0].content.includes('add4: function add4'));
+
+      // non-@rei namespace should not be transpiled
+      assert(!compiled.code.app[0].content.includes('add4: function add4'));
 
       // Cleanup temp modules
       fsExtra.removeSync(destReiNamespace);
@@ -211,6 +213,112 @@ describe('FEBS Development Tests', function () {
     });
   });
 
+  describe('Helpers', function () {
+    describe('febsConfigMerge', function () {
+      it('should override output path from febs-config', function () {
+        const febs = febsModule({
+          fs,
+        });
+
+        const febsConfig = {
+          output: {
+            path: 'a',
+          },
+        };
+
+        const wpConfig = {
+          output: {
+            path: 'b',
+          },
+        };
+
+        const expected = path.resolve(process.cwd(), febsConfig.output.path, '@rei/febs');
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, expected);
+      });
+
+      it('should use default output path if none in febs-config', function () {
+        const febs = febsModule({
+          fs,
+        });
+
+        const febsConfig = {
+          entry: {},
+        };
+
+        const wpConfig = {
+          output: {
+            path: 'b',
+          },
+        };
+
+        const expected = path.resolve(process.cwd(), wpConfig.output.path, '@rei/febs');
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, expected);
+      });
+
+      it('should update wpConfig entry with fully qualified paths', function () {
+        const febs = febsModule({
+          fs,
+        });
+
+        const febsConfig = {
+          entry: {
+            details: [
+              'relative/path/to/entry0.js',
+              'relative/path/to/entry1.js',
+            ],
+          },
+        };
+
+        const wpConfig = {
+          entry: {
+            app: [
+              'some/path/to/entry.js',
+            ],
+          },
+          output: {
+            path: 'b',
+          },
+        };
+
+        const expected0 = path.resolve(process.cwd(), febsConfig.entry.details[0]);
+        const expected1 = path.resolve(process.cwd(), febsConfig.entry.details[1]);
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).entry.details[0], expected0);
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).entry.details[1], expected1);
+      });
+
+      it('original webpack config should not be modified', function () {
+        const febs = febsModule({
+          fs,
+        });
+
+        const febsConfig = {
+          entry: {
+            details: [
+              'relative/path/to/entry0.js',
+              'relative/path/to/entry1.js',
+            ],
+          },
+        };
+
+        const wpConfig = {
+          entry: {
+            app: [
+              'some/path/to/entry.js',
+            ],
+          },
+          output: {
+            path: 'b',
+          },
+        };
+
+        febs.febsConfigMerge(febsConfig, wpConfig);
+
+        assert.equal(wpConfig.output.path, 'b');
+        assert.deepEqual(wpConfig.entry.app, ['some/path/to/entry.js']);
+      });
+    });
+  });
+
   describe('Manifest', async function () {
     it('generates a manifest json file for versioned asset mappings', async function () {
       const getJsonFromFS = lib.getJsonFromFile(fs);
@@ -309,7 +417,7 @@ describe('FEBS Development Tests', function () {
     });
   });
 
-  describe('febs-config via constructor', function () {
+  describe('febs-config', function () {
     it('should allow dist path to be changed', function () {
       const desiredOutputPath = path.resolve('./cool_output_path');
 
@@ -339,6 +447,110 @@ describe('FEBS Development Tests', function () {
 
       assert(webpackConfig.entry.app[0].endsWith(desiredEntryPath));
     });
+
+    describe('febsConfigMerge', function () {
+      it('should override output path from febs-config', function () {
+        const febs = febsModule({
+          fs,
+        });
+
+        const febsConfig = {
+          output: {
+            path: 'a',
+          },
+        };
+
+        const wpConfig = {
+          output: {
+            path: 'b',
+          },
+        };
+
+        const expected = path.resolve(process.cwd(), febsConfig.output.path, '@rei/febs');
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, expected);
+      });
+
+      it('should use default output path if none in febs-config', function () {
+        const febs = febsModule({
+          fs,
+        });
+
+        const febsConfig = {
+          entry: {},
+        };
+
+        const wpConfig = {
+          output: {
+            path: 'b',
+          },
+        };
+
+        const expected = path.resolve(process.cwd(), wpConfig.output.path, '@rei/febs');
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, expected);
+      });
+
+      it('should update wpConfig entry with fully qualified paths', function () {
+        const febs = febsModule({
+          fs,
+        });
+
+        const febsConfig = {
+          entry: {
+            details: [
+              'relative/path/to/entry0.js',
+              'relative/path/to/entry1.js',
+            ],
+          },
+        };
+
+        const wpConfig = {
+          entry: {
+            app: [
+              'some/path/to/entry.js',
+            ],
+          },
+          output: {
+            path: 'b',
+          },
+        };
+
+        const expected0 = path.resolve(process.cwd(), febsConfig.entry.details[0]);
+        const expected1 = path.resolve(process.cwd(), febsConfig.entry.details[1]);
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).entry.details[0], expected0);
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).entry.details[1], expected1);
+      });
+
+      it('original webpack config should not be modified', function () {
+        const febs = febsModule({
+          fs,
+        });
+
+        const febsConfig = {
+          entry: {
+            details: [
+              'relative/path/to/entry0.js',
+              'relative/path/to/entry1.js',
+            ],
+          },
+        };
+
+        const wpConfig = {
+          entry: {
+            app: [
+              'some/path/to/entry.js',
+            ],
+          },
+          output: {
+            path: 'b',
+          },
+        };
+
+        febs.febsConfigMerge(febsConfig, wpConfig);
+
+        assert.equal(wpConfig.output.path, 'b');
+        assert.deepEqual(wpConfig.entry.app, ['some/path/to/entry.js']);
+      });
+    });
   });
 
   describe('Exit codes', function () {
@@ -347,7 +559,9 @@ describe('FEBS Development Tests', function () {
         entry: {
           app1: lib.absPath('fixtures/src/main-es2015-syntax-errors.js'),
         },
-      })).then((o) => { assert.equal(o.exitCode, 0); });
+      })).then((o) => {
+        assert.equal(o.exitCode, 0);
+      });
     });
   });
 
@@ -356,12 +570,14 @@ describe('FEBS Development Tests', function () {
     let FakeWDS;
 
     beforeEach(() => FakeWDS = function (compiler) {
-        this.listen = () => {};
-        this.compiler = compiler;
+      this.listen = () => {
+      };
+      this.compiler = compiler;
     });
 
     it('should create new server', function () {
-      const devServer = devServerFn(FakeWDS, () => {});
+      const devServer = devServerFn(FakeWDS, () => {
+      });
       assert(devServer instanceof FakeWDS);
     });
 

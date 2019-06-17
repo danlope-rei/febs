@@ -16,7 +16,9 @@ const projectPath = process.cwd();
  * conf entries from bin/febs.
  *
  * Passed in at run or test time
+ * @param conf
  * @param conf.env The environment (dev or prod)
+ * @param conf.logLevel The log level.
  * @param command The command from commander.
  * passed in at test-time
  * @param conf.fs The file system (passed in from unit tests.)
@@ -79,9 +81,11 @@ module.exports = function init(command, conf = {}) {
    */
   const febsConfigMerge = (febsConfig, wpConf) => {
     // Update the output.path to what is in febs-config
+    const newOutputPath = R.path(['output', 'path'], febsConfig) ? febsConfig.output.path : wpConf.output.path;
+
     const wpConfNewOutputPath = R.mergeDeepRight(wpConf, {
       output: {
-        path: path.resolve(projectPath, febsConfig.output.path, getPackageName()),
+        path: path.resolve(projectPath, newOutputPath, getPackageName()),
       },
     });
 
@@ -259,6 +263,10 @@ module.exports = function init(command, conf = {}) {
 
     const compiler = createCompiler(ssr)();
 
+    const items = ssr ? 'vue-ssr-server-bundle.json' : 'assets';
+
+    logger.info(`Writing ${items} to: ${compiler.outputPath}`);
+
     if (compilerFn === 'run') {
       compiler[compilerFn](webpackCompileDone);
     } else {
@@ -281,10 +289,12 @@ module.exports = function init(command, conf = {}) {
     cleanDestDir();
 
     // Create client-side bundle
+    logger.info('Running compile for client-side build...');
     runCompile(false);
 
     // If SSRing, create vue-ssr-server-bundle.json.
     if (isSSR()) {
+      logger.info('Running compile for SSR build...');
       runCompile(true);
     }
   };
@@ -306,5 +316,6 @@ module.exports = function init(command, conf = {}) {
     getWebpackConfig,
     addVueSSRToWebpackConfig,
     getWebpackConfigCurried: getWebpackConfigFn,
+    febsConfigMerge,
   };
 };
