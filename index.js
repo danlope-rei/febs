@@ -315,7 +315,7 @@ module.exports = function init(command, conf = {}) {
     startDevServerFn,
     getWebpackConfig,
     addVueSSRToWebpackConfig,
-    getWebpackConfigCurried: getWebpackConfigFn,
+    getWebpackConfigFn,
     febsConfigMerge,
   };
 };

@@ -388,7 +388,7 @@ describe('FEBS Development Tests', function () {
         fs,
       });
 
-      const wpConfig = febs.getWebpackConfigCurried(true)(wpDevConf);
+      const wpConfig = febs.getWebpackConfigFn(true)(wpDevConf);
       assert(wpConfig.plugins.every(plugin => plugin.constructor.name !== 'ManifestPlugin'));
     });
 
@@ -397,7 +397,7 @@ describe('FEBS Development Tests', function () {
         fs,
       });
 
-      const wpConfig = febs.getWebpackConfigCurried(false)(wpDevConf);
+      const wpConfig = febs.getWebpackConfigFn(false)(wpDevConf);
       assert(wpConfig.plugins.some(plugin => plugin.constructor.name === 'ManifestPlugin'));
     });
   });
