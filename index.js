@@ -4,10 +4,10 @@ const wp = require('webpack');
 const R = require('ramda');
 const path = require('path');
 const merge = require('webpack-merge');
+const fsExtra = require('fs-extra');
 const logger = require('./lib/logger');
 const lib = require('./lib');
 const devServer = require('./lib/dev-server');
-const fsExtra = require('fs-extra');
 
 const projectPath = process.cwd();
 
@@ -38,27 +38,27 @@ module.exports = function init(command, conf = {}) {
     const overridesConfFile = path.resolve(projectPath, './webpack.overrides.conf.js');
 
     if (fs.existsSync(overridesConfFile)) {
-      logger.info('Using webpack.overrides.conf: ', overridesConfFile);
+      logger.info('Using local webpack.overrides.conf...');
       return require(overridesConfFile);
     }
 
     return {};
   };
 
-  const getFebsConfigDefaults = () => ({
+  const memoize = fn => R.memoizeWith(R.identity, fn);
+
+  const febsConfigPath = path.resolve(projectPath, './febs-config.json');
+  const readJson = memoize(filePath => fsExtra.readJsonSync(filePath));
+  const getFebsConfigJson = readJson.bind(null, febsConfigPath);
+
+  const getFebsConfig = (febsConfig = {
     output: {
       path: './dist',
     },
-  });
-
-  const getFebsConfig = () => {
-    const febsConfig = getFebsConfigDefaults();
-
-    const febsConfigPath = path.resolve(projectPath, './febs-config.json');
-
+  }) => {
     let febsConfigFileJSON;
     if (fs.existsSync(febsConfigPath)) {
-      febsConfigFileJSON = require(febsConfigPath);
+      febsConfigFileJSON = getFebsConfigJson();
     } else if (febsConfigArg && (febsConfigArg.output || febsConfigArg.entry)) {
       febsConfigFileJSON = febsConfigArg;
     }
@@ -146,7 +146,7 @@ module.exports = function init(command, conf = {}) {
    * @param confOverride Optional conf overrides that comes in either from
    * webpack.overrides.conf or from unit tests.
    */
-  const getWebpackConfigBase = (confOverride) => {
+  const getWebpackConfigBase = memoize((confOverride) => {
     const webpackConfigBase = require('./webpack-config/webpack.base.conf');
     const configsToMerge = [webpackConfigBase];
 
@@ -165,7 +165,7 @@ module.exports = function init(command, conf = {}) {
 
     // Ensure febs config makes the final configurable decisions
     return febsConfigMerge(getFebsConfig(), wpConf);
-  };
+  });
 
   /**
    * Get the webpack config. This depends upon:
@@ -251,7 +251,7 @@ module.exports = function init(command, conf = {}) {
   /**
    * Clean the build destination directory.
    */
-  const cleanDestDir = fsExtra.emptyDirSync.bind(null, getWebpackConfig(false)().output.path);
+  const cleanDestDir = fsExtra.emptyDirSync.bind(null, getWebpackConfigBase().output.path);
 
   /**
    * Runs the webpack compile either via 'run' or 'watch'.
@@ -263,9 +263,13 @@ module.exports = function init(command, conf = {}) {
 
     const compiler = createCompiler(ssr)();
 
-    const items = ssr ? 'vue-ssr-server-bundle.json' : 'assets';
+    logger.info(`Compiling ${ssr ? 'SSR build' : 'client-side bundles'}:`);
 
-    logger.info(`Writing ${items} to: ${compiler.outputPath}`);
+    if (!ssr) {
+      Object.keys(compiler.options.entry).forEach(e => logger.info(`   ✔ ${e}`));
+    }
+
+    logger.info(`📝 Writing ${ssr ? 'vue-ssr-server-bundle.json' : 'assets'} to: ${path.relative(projectPath, compiler.outputPath)}...`);
 
     if (compilerFn === 'run') {
       compiler[compilerFn](webpackCompileDone);
@@ -289,12 +293,10 @@ module.exports = function init(command, conf = {}) {
     cleanDestDir();
 
     // Create client-side bundle
-    logger.info('Running compile for client-side build...');
     runCompile(false);
 
     // If SSRing, create vue-ssr-server-bundle.json.
     if (isSSR()) {
-      logger.info('Running compile for SSR build...');
       runCompile(true);
     }
   };
