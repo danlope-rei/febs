@@ -32,7 +32,7 @@ module.exports = {
       fs,
     });
 
-    const compiler = febs.createCompiler(conf);
+    const compiler = febs.createCompiler(false)(conf);
 
     // Set up in-memory file system for tests.
     compiler.outputFileSystem = fs;
