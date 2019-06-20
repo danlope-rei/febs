@@ -1,6 +1,6 @@
 {
   "name": "@rei/febs",
-  "version": "4.3.2",
+  "version": "4.3.3",
   "description": "REI's next-gen front-end build system.",
   "main": "index.js",
   "directories": {
@@ -60,6 +60,7 @@
     "webpack-dev-server": "^3.2.1",
     "webpack-manifest-plugin": "^2.0.4",
     "webpack-merge": "^4.1.2",
+    "webpack-node-externals": "^1.7.2",
     "winston": "^2.4.1"
   },
   "devDependencies": {
