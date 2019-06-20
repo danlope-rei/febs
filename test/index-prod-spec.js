@@ -4,9 +4,12 @@
 // Dependencies.
 const assert = require('assert');
 const lib = require('./lib');
+const logger = require('../lib/logger');
 
 describe('FEBS Production Tests', function () {
   let compile;
+
+  logger.setLogLevel('warn'); // Suppress info messages
 
   beforeEach(function () {
     process.env.FEBS_TEST = true;
