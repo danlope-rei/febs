@@ -9,9 +9,9 @@
   "scripts": {
     "init": "./bin/init",
     "test:lib": "NODE_ENV=dev mocha -t 8000 test/lib-spec.js",
-    "test:dev": "NODE_ENV=dev mocha -t 8000 test/index-dev-*spec.js",
-    "test:css": "NODE_ENV=dev mocha -t 8000 test/index-dev-css-spec.js",
-    "test:prod": "NODE_ENV=prod mocha -t 8000 test/index-prod-spec.js",
+    "test:dev": "mocha -t 8000 test/index-dev-*spec.js",
+    "test:css": "mocha -t 8000 test/index-dev-css-spec.js",
+    "test:prod": "mocha -t 8000 test/index-prod-spec.js",
     "test": "npm run test:dev && npm run test:prod && npm run test:lib",
     "test-watch": "mocha --watch",
     "test-inspect": "mocha --inspect-brk -t 8000",
@@ -32,6 +32,7 @@
   "dependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "@rei/build-configs": "git+https://git.rei.com/scm/fedpack/rei-build-configs#pr/update-structure",
     "ajv": "^6.10.0",
     "autoprefixer": "^9.5.1",
     "babel-loader": "^8.0.5",
