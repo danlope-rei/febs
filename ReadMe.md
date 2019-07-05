@@ -39,14 +39,11 @@ by checking out the introductory post on the [REI Co-op Engineering blog](https:
 FEBS exposes an executable named `febs` to be used within the scripts of your `package.json`, e.g:
 
     "scripts": {
-      "build": "NODE_ENV=prod febs prod",
-      "dev": "NODE_ENV=dev febs dev --no-dev-server",
-      "live-reload": "NODE_ENV=dev febs dev"
-      "watch": "NODE_ENV=dev febs dev --no-dev-server --watch"
+      "build": "febs prod",
+      "dev": "febs dev --no-dev-server",
+      "live-reload": "febs dev"
+      "watch": "febs dev --no-dev-server --watch"
     }
-
-There is [some work](#23) to remove the requirement on `NODE_ENV` and give full respect to the 
-second argument.
 
 #### Update or use [defaults](#default-configuration) to specify paths for the CSS and JS you want to compile and [run](#run)
 
@@ -93,7 +90,7 @@ implement a linting step per your style guide as a separate npm task in your `pa
 ### Code watching
 To enable code watching, run:
 
-    NODE_ENV=dev npx febs dev --no-dev-server --watch
+    febs dev --no-dev-server --watch
 
 ### Live reloading
 @TODO: additional detail
@@ -103,20 +100,17 @@ To enable code watching, run:
 ### Command-line interface
 FEBS provides a simple command-line interface.
 
-Note: There is [some work](#23) to remove the requirement on `NODE_ENV` and give full respect to the 
-      second argument.
-
 ### Production and Development Builds
 
 #### Production Build Task
 
-    NODE_ENV=prod npx febs prod
+    febs prod
 
 #### Development Build Task
 
-    NODE_ENV=dev npx febs dev
-    NODE_ENV=dev npx febs dev -no-dev-server
-    NODE_ENV=dev npx febs dev --no-dev-server --watch
+    febs dev
+    febs dev -no-dev-server
+    febs dev --no-dev-server --watch
 
 ### FEBS Configuration
 
