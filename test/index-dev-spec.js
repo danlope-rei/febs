@@ -27,8 +27,8 @@ describe('FEBS Development Tests', function () {
     // Keep reference to fs for test assertions.
     fs = lib.createFS();
 
-    // Create compile function using in-memory fs.
-    compile = lib.createCompileFn(fs);
+    // Create compile function using in-memory fs and dev env.
+    compile = lib.createCompileFn(fs, 'development');
   });
 
   describe('ECMAScript', async function () {
@@ -45,8 +45,8 @@ describe('FEBS Development Tests', function () {
 
     it('transpiles ES from @rei namespace only', async function () {
       // Create temp @rei and non-@rei namespace modules in node_modules
-      const srcReiNamespace = path.join(__dirname, 'test-modules/@rei');
-      const destReiNamespace = path.join(__dirname, '../node_modules/@rei');
+      const srcReiNamespace = path.join(__dirname, 'test-modules/@rei/test');
+      const destReiNamespace = path.join(__dirname, '../node_modules/@rei/test');
       const srcNonReiNamespace = path.join(__dirname, 'test-modules/some-module');
       const destNonReiNamespace = path.join(__dirname, '../node_modules/some-module');
 
@@ -217,6 +217,7 @@ describe('FEBS Development Tests', function () {
     describe('febsConfigMerge', function () {
       it('should override output path from febs-config', function () {
         const febs = febsModule({
+          name: () => {},
           fs,
         });
 
@@ -421,11 +422,12 @@ describe('FEBS Development Tests', function () {
     it('should allow dist path to be changed', function () {
       const desiredOutputPath = path.resolve('./cool_output_path');
 
-      const febs = febsModule('build', {
+      const febs = febsModule({
+        fs,
+      }, {
         output: {
           path: desiredOutputPath,
         },
-        fs,
       });
 
       const webpackConfig = febs.getWebpackConfig(false)(wpDevConf);
@@ -436,13 +438,14 @@ describe('FEBS Development Tests', function () {
     it('should allow entry points to be changed', function () {
       const desiredEntryPath = 'src/js/entryX.js';
 
-      const webpackConfig = febsModule('build', {
+      const webpackConfig = febsModule({
+        fs,
+      }, {
         entry: {
           app: [
             desiredEntryPath,
           ],
         },
-        fs,
       }).getWebpackConfig(false)(wpDevConf);
 
       assert(webpackConfig.entry.app[0].endsWith(desiredEntryPath));
@@ -582,7 +585,7 @@ describe('FEBS Development Tests', function () {
     });
 
     it('should pass in compiler and webpack conf', function () {
-      const febs = febsModule('dev', {
+      const febs = febsModule({
         fs,
       });
 

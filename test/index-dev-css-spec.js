@@ -15,8 +15,8 @@ describe('CSS Tests', function () {
     // Keep reference to fs for test assertions.
     fs = lib.createFS();
 
-    // Create compile function using in-memory fs.
-    compile = lib.createCompileFn(fs);
+    // Create compile function using in-memory fs and dev env.
+    compile = lib.createCompileFn(fs, 'development');
   });
 
   describe('CSS', async function () {

@@ -26,10 +26,12 @@ module.exports = {
    *                    compiled code and webpack output.
    */
 
-  createCompileFn: R.curry((fs, conf) => new Promise((resolve, reject) => {
+  createCompileFn: R.curry((fs, env, conf) => new Promise((resolve, reject) => {
     // create compiler instance
     const febs = febsModule({
       fs,
+    }, {
+      env,
     });
 
     const compiler = febs.createCompiler(false)(conf);

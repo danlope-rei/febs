@@ -12,7 +12,7 @@ describe('FEBS Lib Tests', function () {
 
   beforeEach(function () {
     process.env.FEBS_TEST = true;
-    compile = lib.createCompileFn(lib.createFS());
+    compile = lib.createCompileFn(lib.createFS(), 'development');
   });
 
   it('positively asserts against entryName, fileName, content', async function () {
