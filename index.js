@@ -5,6 +5,7 @@ const R = require('ramda');
 const path = require('path');
 const merge = require('webpack-merge');
 const fsExtra = require('fs-extra');
+const { baseWebpackConfigFn, ssrWebpackConfig } = require('@rei/build-configs/application/microsite');
 const logger = require('./lib/logger');
 const lib = require('./lib');
 const devServer = require('./lib/dev-server');
@@ -25,6 +26,13 @@ const projectPath = process.cwd();
  */
 module.exports = function init(command, conf = {}) {
   const febsConfigArg = conf;
+
+  // Get the build environment. (prod | dev)
+  const env = command.name
+    ? command.name() === 'prod'
+      ? 'production'
+      : 'development'
+    : conf.env; // <-- Passed in to set env during unit tests.
 
   // Allow for in-memory fs for testing.
   const fs = conf.fs || require('fs');
@@ -121,20 +129,21 @@ module.exports = function init(command, conf = {}) {
       return wpConf;
     }
 
-    // Remove Manifest plugin during SSR build.
-    const plugins = wpConf.plugins
-      .filter(plugin => plugin.constructor.name !== 'ManifestPlugin');
+    const pluginsToRemove = ['ManifestPlugin', 'CleanWebpackPlugin'];
 
-    const wpConfNoManifest = R.merge(R.dissoc('plugins', wpConf), {
+    // Remove above plugins during SSR build.
+    const plugins = wpConf.plugins
+      .filter(plugin => !pluginsToRemove.includes(plugin.constructor.name));
+
+    const pluginsFiltered = R.merge(R.dissoc('plugins', wpConf), {
       plugins,
     });
 
     // Add SSR config.
-    const webpackServerConf = require('./webpack-config/webpack.server.conf');
     return merge.smartStrategy({
       entry: 'replace',
       plugins: 'append',
-    })(wpConfNoManifest, webpackServerConf);
+    })(pluginsFiltered, ssrWebpackConfig);
   });
 
   /**
@@ -147,7 +156,10 @@ module.exports = function init(command, conf = {}) {
    * webpack.overrides.conf or from unit tests.
    */
   const getWebpackConfigBase = memoize((confOverride) => {
-    const webpackConfigBase = require('./webpack-config/webpack.base.conf');
+    const webpackConfigBase = baseWebpackConfigFn(env);
+
+    logger.info(`Building in webpack ${webpackConfigBase.mode} mode...`);
+
     const configsToMerge = [webpackConfigBase];
 
     // Config for webpack-merge
@@ -159,9 +171,6 @@ module.exports = function init(command, conf = {}) {
     configsToMerge.push(getOverridesConf(confOverride));
 
     const wpConf = merge.smartStrategy(wpMergeConf)(configsToMerge);
-
-    // Force output path to always be the same. (Overrideable in febs-config)
-    wpConf.output.path = webpackConfigBase.output.path;
 
     // Ensure febs config makes the final configurable decisions
     return febsConfigMerge(getFebsConfig(), wpConf);
@@ -230,7 +239,7 @@ module.exports = function init(command, conf = {}) {
     }
 
     // If dev mode, do not exit as it will kill watcher.
-    if (process.env.NODE_ENV === 'dev') {
+    if (env === 'development') {
       return {
         err,
         stats,
@@ -247,11 +256,6 @@ module.exports = function init(command, conf = {}) {
       exitCode: 1,
     };
   };
-
-  /**
-   * Clean the build destination directory.
-   */
-  const cleanDestDir = fsExtra.emptyDirSync.bind(null, getWebpackConfigBase().output.path);
 
   /**
    * Runs the webpack compile either via 'run' or 'watch'.
@@ -282,7 +286,6 @@ module.exports = function init(command, conf = {}) {
   /**
    * Compile function.
    *
-   * - Cleans the /dist directory
    * - Creates compiler with config object
    * - Runs via webpack run/watch methods
    * - Handles the various WP errors.
@@ -290,8 +293,6 @@ module.exports = function init(command, conf = {}) {
    * @returns {Object} Webpack compiler instance.
    */
   const compile = function compile() {
-    cleanDestDir();
-
     // Create client-side bundle
     runCompile(false);
 
