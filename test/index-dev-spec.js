@@ -297,7 +297,7 @@ describe('FEBS Development Tests', function () {
   });
 
   describe('Webpack config', async function () {
-    it('Output path cannot be modified', async function () {
+    it('Output path can be modified', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
           app: lib.absPath('fixtures/src/main-es2015.js'),
@@ -307,7 +307,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(!compiled.options.output.path.includes('build/modified-output-path'));
+      assert(compiled.options.output.path.includes('build/modified-output-path'));
     });
   });
 

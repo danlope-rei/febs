@@ -5,9 +5,10 @@
 ## Summary
 
 `FEBS` is an extensible [webpack](https://webpack.js.org/)\-based [front-end build system](https://engineering.rei.com/frontend/the-rei-front-end-build-system.html) 
-designed to be used by a community of front-end developers or a series of projects using a similar set of technologies in order to reduce duplicate effort on build configuration.
+designed to be used by a community of front-end developers or a series of projects using a similar set of technologies
+in order to reduce duplicate effort of build configurations.
 
-Its code falls into two categories
+Its code falls into two categories:
 
 ### [Build Features](#build-features)
 
@@ -32,7 +33,7 @@ by checking out the introductory post on the [REI Co-op Engineering blog](https:
 
 #### Install the dependency
 
-`npm install --save @rei/febs`
+`npm install --save @rei/febs` (`--global` switch optional)
 
 #### Assign build tasks
 
@@ -53,7 +54,7 @@ See [Command-line Interface](#command-line-interface) for more details and addit
 
 ### Entry points
   - Default JavaScript entry point: `/src/js/entry.js`
-  - Default Style entry point: `/src/style/entry.css`
+  - Default Style entry point: `/src/style/entry.less`
 
 ### Output path
   - Bundles written to: `/dist/<packageName>/`.
@@ -112,11 +113,11 @@ FEBS provides a simple command-line interface.
     febs dev -no-dev-server
     febs dev --no-dev-server --watch
 
-### FEBS Configuration
+### FEBS Configuration (`febs-config.json`)
 
-If the default entry points / output paths don't work for you, you can specify them by using a `febs-config.json` file next to your package.json that is using `febs`.
+If the default entry/output paths don't work for you, you can specify them by using a `febs-config.json` file next to your package.json that is using `febs`.
 
-Here is an example of a entry / output configuration that might be made to use a more Java / Maven like file structure.
+Here is an example of a entry or output configuration that might be made to use a more Java / Maven like file structure.
 
 *`febs-config.json`*
 
@@ -135,19 +136,35 @@ Here is an example of a entry / output configuration that might be made to use a
       }
     }
 
+Notes:
+ - the `febs-config.json` overrides the `webpack.overrides.config.js` file. (i.e., if `entry` and `output` are
+   specified in both, the build will use the entries in `febs-config.json`.
+ - the `entry/output` paths are resolved relative to where the npm root directory, i.e., where the `package.json`
+is located. (This is different from the overrides file where the fully qualified path must be specified.)
+ - the `output` path is appended with `<package name>`, i.e., `dist/details/`. Use the overrides file if you want to
+ specify a unique path. 
+ 
 ####  `entry` property
 
-In the `febs-config.json` example above we are creating our own entry points, instead of using the [defaults](#default-configuration). We specify the path where our JavaScript and styles live.
+In the `febs-config.json` example above, we are creating our own entry points instead of using the
+[defaults](#default-configuration). We specify the path where our JavaScript and styles live.
+
+Note: The `entry` paths are relative to npm root directory.
 
 #### `output` property
 
 In the `febs-config.json` example above we change the default output path to the Java classpath where a Java asset injector will be able to read for injection.
 
+Notes:
+- The `output` paths are relative to npm root directory.
+- the `output` path is appended with `<package name>`, i.e., `dist/<package name>/`. Use the overrides file if you want to
+   specify a unique path. 
+
 #### Example configuration output
 Given the above example, FEBS will generate two bundles at the following paths:
 
-    ./target/classes/dist/<packageName>/details.1234.js
-    ./target/classes/dist/<packageName>/detail-reviews.1234.js
+    ./target/classes/dist/<package name>/details.1234.js
+    ./target/classes/dist/<package name>/detail-reviews.1234.js
 
 - `details.1234.js` will only contain JavaScript contained in entry.js (including its dependencies)
 
@@ -155,7 +172,7 @@ Given the above example, FEBS will generate two bundles at the following paths:
 
 If you'd like to further configure FEBS, you can look at the [webpack overrides](#webpack-overrides)
 
-### Adding `webpack` loaders
+### Webpack overrides
 
 FEBS uses `Webpack` to build and is providing a default Webpack configuration under the hood.
 
@@ -183,14 +200,13 @@ you think others might need the override please file a ticket or reach out for [
       ]
     };
     
-You can find out all of the Webpack defaults by reviewing the base
-[Webpack configuration file](webpack-config/webpack.base.conf.js).
+You can find out all of the Webpack defaults by reviewing the [base webpack config](https://github.com/rei/front-end-build-configs/blob/master/application/microsite/webpack.base.conf.js).
 
 ## Additional Concepts
 
 ### Build Manifest
 
-A `febs-manifest.json` is built to `./dist/<packageName>/febs-manifest.json`. This is a
+A `febs-manifest.json` is built to the output directory. This is a
 mechanism to be used by an asset injector to insert assets onto a page.
 
 @TODO: Additional detail

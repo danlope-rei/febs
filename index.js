@@ -59,11 +59,7 @@ module.exports = function init(command, conf = {}) {
   const readJson = memoize(filePath => fsExtra.readJsonSync(filePath));
   const getFebsConfigJson = readJson.bind(null, febsConfigPath);
 
-  const getFebsConfig = (febsConfig = {
-    output: {
-      path: './dist',
-    },
-  }) => {
+  const getFebsConfig = (febsConfig = {}) => {
     let febsConfigFileJSON;
     if (fs.existsSync(febsConfigPath)) {
       febsConfigFileJSON = getFebsConfigJson();
