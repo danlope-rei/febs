@@ -213,113 +213,6 @@ describe('FEBS Development Tests', function () {
     });
   });
 
-  describe('Helpers', function () {
-    describe('febsConfigMerge', function () {
-      it('should override output path from febs-config', function () {
-        const febs = febsModule({
-          name: () => {},
-          fs,
-        });
-
-        const febsConfig = {
-          output: {
-            path: 'a',
-          },
-        };
-
-        const wpConfig = {
-          output: {
-            path: 'b',
-          },
-        };
-
-        const expected = path.resolve(process.cwd(), febsConfig.output.path, '@rei/febs');
-        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, expected);
-      });
-
-      it('should use default output path if none in febs-config', function () {
-        const febs = febsModule({
-          fs,
-        });
-
-        const febsConfig = {
-          entry: {},
-        };
-
-        const wpConfig = {
-          output: {
-            path: 'b',
-          },
-        };
-
-        const expected = path.resolve(process.cwd(), wpConfig.output.path, '@rei/febs');
-        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, expected);
-      });
-
-      it('should update wpConfig entry with fully qualified paths', function () {
-        const febs = febsModule({
-          fs,
-        });
-
-        const febsConfig = {
-          entry: {
-            details: [
-              'relative/path/to/entry0.js',
-              'relative/path/to/entry1.js',
-            ],
-          },
-        };
-
-        const wpConfig = {
-          entry: {
-            app: [
-              'some/path/to/entry.js',
-            ],
-          },
-          output: {
-            path: 'b',
-          },
-        };
-
-        const expected0 = path.resolve(process.cwd(), febsConfig.entry.details[0]);
-        const expected1 = path.resolve(process.cwd(), febsConfig.entry.details[1]);
-        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).entry.details[0], expected0);
-        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).entry.details[1], expected1);
-      });
-
-      it('original webpack config should not be modified', function () {
-        const febs = febsModule({
-          fs,
-        });
-
-        const febsConfig = {
-          entry: {
-            details: [
-              'relative/path/to/entry0.js',
-              'relative/path/to/entry1.js',
-            ],
-          },
-        };
-
-        const wpConfig = {
-          entry: {
-            app: [
-              'some/path/to/entry.js',
-            ],
-          },
-          output: {
-            path: 'b',
-          },
-        };
-
-        febs.febsConfigMerge(febsConfig, wpConfig);
-
-        assert.equal(wpConfig.output.path, 'b');
-        assert.deepEqual(wpConfig.entry.app, ['some/path/to/entry.js']);
-      });
-    });
-  });
-
   describe('Manifest', async function () {
     it('generates a manifest json file for versioned asset mappings', async function () {
       const getJsonFromFS = lib.getJsonFromFile(fs);
@@ -473,7 +366,7 @@ describe('FEBS Development Tests', function () {
         assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, expected);
       });
 
-      it('should use default output path if none in febs-config', function () {
+      it('should use wpConf output if none in febs-config', function () {
         const febs = febsModule({
           fs,
         });
@@ -488,8 +381,7 @@ describe('FEBS Development Tests', function () {
           },
         };
 
-        const expected = path.resolve(process.cwd(), wpConfig.output.path, '@rei/febs');
-        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, expected);
+        assert.deepEqual(febs.febsConfigMerge(febsConfig, wpConfig).output.path, 'b');
       });
 
       it('should update wpConfig entry with fully qualified paths', function () {

@@ -1,4 +1,4 @@
-/* eslint-disable global-require, import/no-dynamic-require */
+/* eslint-disable global-require, import/no-dynamic-require, no-nested-ternary */
 
 const wp = require('webpack');
 const R = require('ramda');
@@ -89,11 +89,13 @@ module.exports = function init(command, conf = {}) {
    */
   const febsConfigMerge = (febsConfig, wpConf) => {
     // Update the output.path to what is in febs-config
-    const newOutputPath = R.path(['output', 'path'], febsConfig) ? febsConfig.output.path : wpConf.output.path;
+    const newOutputPath = R.path(['output', 'path'], febsConfig)
+      ? path.resolve(projectPath, febsConfig.output.path, getPackageName())
+      : wpConf.output.path;
 
     const wpConfNewOutputPath = R.mergeDeepRight(wpConf, {
       output: {
-        path: path.resolve(projectPath, newOutputPath, getPackageName()),
+        path: newOutputPath,
       },
     });
 
