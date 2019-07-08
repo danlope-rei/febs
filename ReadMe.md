@@ -113,7 +113,7 @@ FEBS provides a simple command-line interface.
     febs dev -no-dev-server
     febs dev --no-dev-server --watch
 
-### FEBS Configuration (`febs-config.json`)
+### FEBS Configuration
 
 If the default entry/output paths don't work for you, you can specify them by using a `febs-config.json` file next to your package.json that is using `febs`.
 
