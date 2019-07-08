@@ -30,7 +30,7 @@
   "license": "MIT",
   "repository": "https://github.com/rei/febs",
   "dependencies": {
-    "@rei/front-end-build-configs": "https://www.github.com/rei/front-end-build-configs",
+    "@rei/front-end-build-configs": "git+https://github.com/rei/front-end-build-configs.git",
     "commander": "^2.15.0",
     "fs-extra": "^4.0.3",
     "istanbul": "~0.4.5",
