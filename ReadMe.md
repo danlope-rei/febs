@@ -117,7 +117,7 @@ FEBS provides a simple command-line interface.
 
 If the default entry/output paths don't work for you, you can specify them by using a `febs-config.json` file next to your package.json that is using `febs`.
 
-Here is an example of a entry or output configuration that might be made to use a more Java / Maven like file structure.
+Here is an example of `entry`/`output` paths using a typical `Java`/`Maven`-like project directory structure.
 
 *`febs-config.json`*
 
@@ -149,14 +149,14 @@ is located. (This is different from the overrides file where the fully qualified
 In the `febs-config.json` example above, we are creating our own entry points instead of using the
 [defaults](#default-configuration). We specify the path where our JavaScript and styles live.
 
-Note: The `entry` paths are relative to npm root directory.
+Note: The `entry` paths are specified relative to npm root directory.
 
 #### `output` property
 
 In the `febs-config.json` example above we change the default output path to the Java classpath where a Java asset injector will be able to read for injection.
 
 Notes:
-- The `output` paths are relative to npm root directory.
+- The `output` paths are specified relative to npm root directory.
 - the `output` path is appended with `<package name>`, i.e., `dist/<package name>/`. Use the overrides file if you want to
    specify a unique path. 
 
