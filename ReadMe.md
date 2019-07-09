@@ -137,12 +137,9 @@ Here is an example of `entry`/`output` paths using a typical `Java`/`Maven`-like
     }
 
 Notes:
- - the `febs-config.json` overrides the `webpack.overrides.config.js` file. (i.e., if `entry` and `output` are
-   specified in both, the build will use the entries in `febs-config.json`.
- - the `entry/output` paths are resolved relative to where the npm root directory, i.e., where the `package.json`
-is located. (This is different from the overrides file where the fully qualified path must be specified.)
- - the `output` path is appended with `<package name>`, i.e., `dist/details/`. Use the overrides file if you want to
- specify a unique path. 
+ - the `febs-config.json` overrides the `webpack.overrides.config.js` file. (i.e., if `entry` and `output` are specified in both, the build will use the entries in `febs-config.json`.
+ - the `entry/output` paths are resolved relative to npm root.
+ - the `output` path is appended with `<package name>`, i.e., `dist/details/`. Use the overrides file if you want to specify a unique path. 
  
 ####  `entry` property
 
@@ -157,8 +154,7 @@ In the `febs-config.json` example above we change the default output path to the
 
 Notes:
 - The `output` paths are specified relative to npm root directory.
-- the `output` path is appended with `<package name>`, i.e., `dist/<package name>/`. Use the overrides file if you want to
-   specify a unique path. 
+- the `output` path is appended with `<package name>`, i.e., `dist/<package name>/`. Use the overrides file if you want to specify a unique path. 
 
 #### Example configuration output
 Given the above example, FEBS will generate two bundles at the following paths:
@@ -174,12 +170,11 @@ If you'd like to further configure FEBS, you can look at the [webpack overrides]
 
 ### Webpack overrides
 
-FEBS uses `Webpack` to build and is providing a default Webpack configuration under the hood.
+You may also configure additional loaders and update your `input/output` entries in a local file
+called `webpack.overrides.conf.js` (See below example).
 
-There may be cases where you need to add a loader for your build that isn't provided by default. 
-To do this, just create a `webpack.overrides.conf.js` with your loader in your project root. If 
-you think others might need the override please file a ticket or reach out for [support]
-(#support). Where you can, attempt to avoid using this feature to reduce duplication of work.
+If you do need an override, consider opening a PR to get this pulled into the
+base config or reach out to [support](#support). By doing so, we can all benefit from your overrides and prevent others from needing to duplicate the same overrides.
 
     // Webpack.overrides.conf.js
     module.exports = {
