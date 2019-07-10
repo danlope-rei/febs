@@ -5,7 +5,7 @@ const R = require('ramda');
 const path = require('path');
 const merge = require('webpack-merge');
 const fsExtra = require('fs-extra');
-const { baseWebpackConfigFn, ssrWebpackConfig } = require('@rei/front-end-build-configs/application/microsite');
+const { baseConfigFn, ssrConfig } = require('@rei/front-end-build-configs').profiles.application;
 const logger = require('./lib/logger');
 const lib = require('./lib');
 const devServer = require('./lib/dev-server');
@@ -46,8 +46,16 @@ module.exports = function init(command, conf = {}) {
     const overridesConfFile = path.resolve(projectPath, './webpack.overrides.conf.js');
 
     if (fs.existsSync(overridesConfFile)) {
-      logger.info('Using local webpack.overrides.conf...');
-      return require(overridesConfFile);
+      logger.info('Using local webpack.overrides.conf.js...');
+
+      const overridesConf = require(overridesConfFile);
+
+      // Warn if overriding output path
+      if (overridesConf.output.path) {
+        logger.warn('Overriding the output path may break upstream expectations of asset locations.');
+      }
+
+      return overridesConf;
     }
 
     return {};
@@ -65,6 +73,11 @@ module.exports = function init(command, conf = {}) {
       febsConfigFileJSON = getFebsConfigJson();
     } else if (febsConfigArg && (febsConfigArg.output || febsConfigArg.entry)) {
       febsConfigFileJSON = febsConfigArg;
+    }
+
+    if (febsConfigFileJSON) {
+      logger.info('Using local febs-config.json...');
+      logger.warn('Entries in febs-config.json will override those in webpack.overrides.conf.js.');
     }
 
     return R.merge(febsConfig, febsConfigFileJSON);
@@ -141,7 +154,7 @@ module.exports = function init(command, conf = {}) {
     return merge.smartStrategy({
       entry: 'replace',
       plugins: 'append',
-    })(pluginsFiltered, ssrWebpackConfig);
+    })(pluginsFiltered, ssrConfig);
   });
 
   /**
@@ -154,7 +167,7 @@ module.exports = function init(command, conf = {}) {
    * webpack.overrides.conf or from unit tests.
    */
   const getWebpackConfigBase = memoize((confOverride) => {
-    const webpackConfigBase = baseWebpackConfigFn(env);
+    const webpackConfigBase = baseConfigFn(env);
 
     logger.info(`Building in webpack ${webpackConfigBase.mode} mode...`);
 
