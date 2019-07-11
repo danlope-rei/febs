@@ -51,7 +51,7 @@ module.exports = function init(command, conf = {}) {
       const overridesConf = require(overridesConfFile);
 
       // Warn if overriding output path
-      if (overridesConf.output.path) {
+      if (R.hasPath(['output', 'path'], overridesConf)) {
         logger.warn('Overriding the output path may break upstream expectations of asset locations.');
       }
 
@@ -98,7 +98,7 @@ module.exports = function init(command, conf = {}) {
    */
   const febsConfigMerge = (febsConfig, wpConf) => {
     // Update the output.path to what is in febs-config
-    const newOutputPath = R.path(['output', 'path'], febsConfig)
+    const newOutputPath = R.hasPath(['output', 'path'], febsConfig)
       ? path.resolve(projectPath, febsConfig.output.path, getPackageName())
       : wpConf.output.path;
 

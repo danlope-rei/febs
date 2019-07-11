@@ -35,7 +35,7 @@
     "fs-extra": "^4.0.3",
     "memory-fs": "^0.4.1",
     "mocha": "^5.2.0",
-    "ramda": "^0.25.0",
+    "ramda": "^0.26.0",
     "webpack": "^4.35.3",
     "webpack-dev-server": "^3.2.1",
     "webpack-merge": "^4.1.2",
