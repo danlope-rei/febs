@@ -14,7 +14,7 @@ describe('FEBS Production Tests', function () {
   beforeEach(function () {
     process.env.FEBS_TEST = true;
 
-    compile = lib.createCompileFn(lib.createFS());
+    compile = lib.createCompileFn(lib.createFS(), 'production');
   });
 
   it('js is minified', async function () {

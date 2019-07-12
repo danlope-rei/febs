@@ -2,24 +2,12 @@
 const febs = require('../index.js');
 const program = require('commander');
 
-// Set default command to 'build' (commander {isDefault: true} not working..)
-process.argv[2] = process.argv[2] ? process.argv[2] : 'build';
-
 program
   .usage('[task] [options]')
   .description('Builds and bundles front-end assets with minimal configuration\n')
   .version(require('../package.json').version)
   .option('-v, --verbose', 'Increase logging verbosity of build system')
   .option('--debug', 'Higher level of verbosity, including debug output');
-
-program
-  .command('build')
-  .description('(Default) Builds front-end assets optimized for production\n')
-  .action((command) => {
-    febs(command, {
-      logLevel: command.parent.verbose ? 'verbose' : 'info',
-    }).compile();
-  });
 
 program
   .command('prod')
@@ -50,12 +38,17 @@ program
 program
   .on('--help', () => {
     process.stdout.write(`  Examples:
-        $ NODE_ENV=prod febs
-        $ NODE_ENV=dev febs dev --no-dev-server
-        $ NODE_ENV=dev febs dev --no-dev-server --watch
-        $ NODE_ENV=dev febs dev (starts dev-server)
-        $ NODE_ENV=prod febs [build|prod] --verbose
+        $ febs prod
+        $ febs dev --no-dev-server
+        $ febs dev --no-dev-server --watch
+        $ febs dev (starts dev-server)
+        $ febs [dev|prod] --verbose
     `);
   });
 
 program.parse(process.argv);
+
+// Display help if no command given.
+if (!process.argv.slice(2).length) {
+  program.help();
+}
