@@ -30,7 +30,7 @@
   "license": "MIT",
   "repository": "https://github.com/rei/febs",
   "dependencies": {
-    "@rei/front-end-build-configs": "^1.0.0",
+    "@rei/front-end-build-configs": "git+https://github.com/rei/front-end-build-configs.git#remove-clean-wp-plugin",
     "commander": "^2.15.0",
     "fs-extra": "^4.0.3",
     "memory-fs": "^0.4.1",
