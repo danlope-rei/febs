@@ -295,6 +295,11 @@ module.exports = function init(command, conf = {}) {
   };
 
   /**
+   * Clean the build destination directory.
+   */
+  const cleanDestDir = fsExtra.emptyDirSync.bind(null, getWebpackConfigBase().output.path);
+
+  /**
    * Compile function.
    *
    * - Creates compiler with config object
@@ -304,6 +309,8 @@ module.exports = function init(command, conf = {}) {
    * @returns {Object} Webpack compiler instance.
    */
   const compile = function compile() {
+    cleanDestDir();
+
     // Create client-side bundle
     runCompile(false);
 
