@@ -80,7 +80,7 @@ module.exports = function init(command, conf = {}) {
       logger.warn('Entries in febs-config.json will override those in webpack.overrides.conf.js.');
     }
 
-    return R.merge(febsConfig, febsConfigFileJSON);
+    return R.mergeRight(febsConfig, febsConfigFileJSON);
   });
 
   const isSSR = () => getFebsConfig().ssr;
@@ -120,7 +120,7 @@ module.exports = function init(command, conf = {}) {
         )
       );
 
-      return R.merge(R.dissoc('entry', wpConfNewOutputPath), {
+      return R.mergeRight(R.dissoc('entry', wpConfNewOutputPath), {
         entry: newEntries,
       });
     }
@@ -129,13 +129,14 @@ module.exports = function init(command, conf = {}) {
   };
 
   /**
-   * Modifications needed for SSR.
+   * Merge the SSR webpack config with the base config and return
+   * array of the client and server-side webpack configs.
    *
-   * @param ssr
+   * @param ssr Whether or not to create the server-side bundle.
    * @param {Array} wpConf. The base wp conf wrapped in array.
-   * @returns {*}
+   * @returns {Array} An array containing CS and SS bundles.
    */
-  const addVueSSRToWebpackConfig = R.curry((ssr, wpConf) => {
+  const addVueSSRConfigToConfigList = R.curry((ssr, wpConf) => {
     if (!ssr) {
       return wpConf;
     }
@@ -146,7 +147,7 @@ module.exports = function init(command, conf = {}) {
     const plugins = wpConf[0].plugins
       .filter(plugin => !pluginsToRemove.includes(plugin.constructor.name));
 
-    const pluginsFiltered = R.merge(R.dissoc('plugins', wpConf[0]), {
+    const pluginsFiltered = R.mergeRight(R.dissoc('plugins', wpConf[0]), {
       plugins,
     });
 
@@ -200,8 +201,8 @@ module.exports = function init(command, conf = {}) {
    *  - any other overrides coming in from febs-config.json.
    *  - optional overrides passed in from unit tests.
    */
-  const getWebpackConfigFn = ssr => R.compose(
-    addVueSSRToWebpackConfig(ssr),
+  const getWebpackConfigsFn = ssr => R.compose(
+    addVueSSRConfigToConfigList(ssr),
     getWebpackConfigBase
   );
 
@@ -209,9 +210,9 @@ module.exports = function init(command, conf = {}) {
    * Configure
    * @param ssr Whether or not to include SSR webpack build config.
    * @returns {function} A function that takes overrides argument
-   * and returns the final webpack config.
+   * and returns final webpack configs (both client and server).
    */
-  const getWebpackConfig = ssr => getWebpackConfigFn(ssr);
+  const getWebpackConfigs = ssr => getWebpackConfigsFn(ssr);
 
   /**
    * Create's compiler instance with appropriate environmental
@@ -228,7 +229,7 @@ module.exports = function init(command, conf = {}) {
    */
   const createCompiler = ssr => R.compose(
     createWebpackCompiler,
-    getWebpackConfig(ssr)
+    getWebpackConfigs(ssr)
   );
 
   /**
@@ -331,9 +332,9 @@ module.exports = function init(command, conf = {}) {
     createCompiler,
     webpackCompileDone,
     startDevServerFn,
-    getWebpackConfig,
-    addVueSSRToWebpackConfig,
-    getWebpackConfigFn,
+    getWebpackConfig: getWebpackConfigs,
+    addVueSSRToWebpackConfig: addVueSSRConfigToConfigList,
+    getWebpackConfigFn: getWebpackConfigsFn,
     febsConfigMerge,
   };
 };
