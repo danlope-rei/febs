@@ -105,7 +105,7 @@ describe('FEBS Development Tests', function () {
       });
     });
 
-    it('polyfills based on supported browsers (IE11)', async function () {
+    it.only('polyfills based on supported browsers (IE11)', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
           app1: lib.absPath('fixtures/src/main-es-polyfill.js'),
@@ -115,14 +115,14 @@ describe('FEBS Development Tests', function () {
       // Object.assign
       assert(lib.compiledContains(compiled, {
         entryName: /app1/,
-        content: /es6.object.assign/,
+        content: /es.object.assign/,
         fileName: /\.js$/,
       }));
 
       // Promise
       assert(lib.compiledContains(compiled, {
         entryName: /app1/,
-        content: /es6.promise/,
+        content: /es.promise/,
         fileName: /\.js$/,
       }));
     });
