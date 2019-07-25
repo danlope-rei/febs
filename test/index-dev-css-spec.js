@@ -27,7 +27,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(!lib.compiledContains(compiled, {
         content: /Resistance is futile./,
@@ -41,7 +41,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -57,7 +57,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -73,7 +73,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -89,7 +89,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -105,7 +105,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -121,7 +121,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -140,7 +140,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -156,7 +156,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -172,7 +172,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -188,7 +188,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -204,7 +204,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -222,7 +222,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -238,7 +238,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -254,7 +254,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -270,7 +270,7 @@ describe('CSS Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,

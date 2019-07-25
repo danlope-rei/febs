@@ -9,7 +9,7 @@ const logger = require('../lib/logger');
 describe('FEBS Production Tests', function () {
   let compile;
 
-  logger.setLogLevel('warn'); // Suppress info messages
+  logger.setLogLevel('error'); // Suppress logger messages
 
   beforeEach(function () {
     process.env.FEBS_TEST = true;

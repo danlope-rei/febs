@@ -44,7 +44,7 @@ module.exports = {
       const webpackResults = febs.webpackCompileDone(err, stats);
 
       // Syntax errors are in stats object.
-      const { entrypoints, errors, warnings } = stats.toJson('verbose');
+      const { entrypoints, errors, warnings } = stats.toJson('verbose').children[0];
 
       if (errors.length > 0 || warnings.length > 0) {
         return resolve({
@@ -116,5 +116,5 @@ module.exports = {
     entries);
   },
 
-  compiledWithNoErrors: compiled => compiled.stats.compilation.errors.length === 0,
+  compiledWithNoErrors: compiled => !compiled.stats.hasErrors(),
 };

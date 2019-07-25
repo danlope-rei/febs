@@ -8,9 +8,8 @@ const logger = require('../lib/logger');
 describe('FEBS Lib Tests', function () {
   let compile;
 
-  logger.setLogLevel('warn'); // Suppress info messages
-
   beforeEach(function () {
+    logger.setLogLevel('error'); // Suppress info messages
     process.env.FEBS_TEST = true;
     compile = lib.createCompileFn(lib.createFS(), 'development');
   });

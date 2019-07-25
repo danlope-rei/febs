@@ -15,11 +15,11 @@ const logger = require('../lib/logger');
 const wpDevConf = require('../webpack-config/webpack.base.conf');
 const febsModule = require('../index');
 
+logger.setLogLevel('error'); // Suppress logger messages
+
 describe('FEBS Development Tests', function () {
   let compile;
   let fs;
-
-  logger.setLogLevel('warn'); // Suppress info messages
 
   beforeEach(function () {
     process.env.FEBS_TEST = true;
@@ -29,6 +29,10 @@ describe('FEBS Development Tests', function () {
 
     // Create compile function using in-memory fs and dev env.
     compile = lib.createCompileFn(fs, 'development');
+  });
+
+  afterEach(function () {
+    logger.setLogLevel('error'); // Suppress logger messages
   });
 
   describe('ECMAScript', async function () {
@@ -97,7 +101,7 @@ describe('FEBS Development Tests', function () {
           app: lib.absPath('fixtures/src/main-es2015-syntax-errors.js'),
         },
       })).then((o) => {
-        assert.ok(o.stats.compilation.errors[0].message.includes('Unexpected token'));
+        assert.ok(o.stats.toJson().errors[0].includes('Unexpected token'));
       });
     });
 
@@ -121,7 +125,7 @@ describe('FEBS Development Tests', function () {
         content: /es6.promise/,
         fileName: /\.js$/,
       }));
-    })
+    });
   });
 
 
@@ -133,7 +137,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -149,7 +153,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -171,7 +175,7 @@ describe('FEBS Development Tests', function () {
         fileName: /\.css$/,
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
     });
 
     it('transpiles es2015+ Vue tags', async function () {
@@ -181,7 +185,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
       assert(lib.compiledContains(compiled, {
         entryName: /^app$/,
@@ -196,7 +200,7 @@ describe('FEBS Development Tests', function () {
           app: lib.absPath('fixtures/src/vue/main-vue-syntax-error.js'),
         },
       })).then((o) => {
-        assert.ok(o.stats.compilation.errors[0].message.includes('SyntaxError'));
+        assert.ok(o.stats.toJson().errors[0].includes('SyntaxError'));
       });
     });
   });
@@ -223,9 +227,9 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(lib.compiledWithNoErrors(compiled), compiled.stats.compilation.errors);
+      assert(lib.compiledWithNoErrors(compiled));
 
-      const manifestFile = path.resolve(compiled.options.output.path, 'febs-manifest.json');
+      const manifestFile = path.resolve(compiled.stats.toJson().children[0].outputPath, 'febs-manifest.json');
       assert(fs.statSync(manifestFile).isFile());
 
       const manifestJson = getJsonFromFS(manifestFile);
@@ -250,10 +254,11 @@ describe('FEBS Development Tests', function () {
         fs,
       });
 
-      const wpConfig = febs.addVueSSRToWebpackConfig(true, wpDevConf);
+      const wpConfig = febs.addVueSSRToWebpackConfig(true, [wpDevConf]);
+      assert.equal(wpConfig.length, 2);
 
-      assert(wpConfig.plugins.some(plugin => plugin.constructor.name === 'VueSSRServerPlugin'));
-      assert.equal(wpConfig.output.libraryTarget, 'commonjs2');
+      assert(wpConfig[1].plugins.some(plugin => plugin.constructor.name === 'VueSSRServerPlugin'));
+      assert.equal(wpConfig[1].output.libraryTarget, 'commonjs2');
     });
 
     it('should not add VueSSRServerPlugin', function () {
@@ -261,9 +266,9 @@ describe('FEBS Development Tests', function () {
         fs,
       });
 
-      const wpConfig = febs.addVueSSRToWebpackConfig(false, wpDevConf);
+      const wpConfig = febs.addVueSSRToWebpackConfig(false, [wpDevConf]);
 
-      assert(wpConfig.plugins.every(plugin => plugin.constructor.name !== 'VueSSRServerPlugin'));
+      assert(wpConfig[0].plugins.every(plugin => plugin.constructor.name !== 'VueSSRServerPlugin'));
     });
   });
 
@@ -274,7 +279,7 @@ describe('FEBS Development Tests', function () {
       });
       const expectedLength = wpDevConf.module.rules.length;
       const wpConfig = febs.getWebpackConfig(false)(wpDevConf);
-      assert.equal(expectedLength, wpConfig.module.rules.length);
+      assert.equal(expectedLength, wpConfig[0].module.rules.length);
     });
 
     it('should not contain ManifestPlugin if SSR build', function () {
@@ -283,7 +288,7 @@ describe('FEBS Development Tests', function () {
       });
 
       const wpConfig = febs.getWebpackConfigFn(true)(wpDevConf);
-      assert(wpConfig.plugins.every(plugin => plugin.constructor.name !== 'ManifestPlugin'));
+      assert(wpConfig[1].plugins.every(plugin => plugin.constructor.name !== 'ManifestPlugin'));
     });
 
     it('should contain ManifestPlugin if not SSR build', function () {
@@ -292,7 +297,7 @@ describe('FEBS Development Tests', function () {
       });
 
       const wpConfig = febs.getWebpackConfigFn(false)(wpDevConf);
-      assert(wpConfig.plugins.some(plugin => plugin.constructor.name === 'ManifestPlugin'));
+      assert(wpConfig[0].plugins.some(plugin => plugin.constructor.name === 'ManifestPlugin'));
     });
   });
 
@@ -307,7 +312,7 @@ describe('FEBS Development Tests', function () {
         },
       }));
 
-      assert(compiled.options.output.path.includes('build/modified-output-path'));
+      assert(compiled.stats.toJson().children[0].outputPath.includes('build/modified-output-path'));
     });
   });
 
@@ -325,7 +330,7 @@ describe('FEBS Development Tests', function () {
 
       const webpackConfig = febs.getWebpackConfig(false)(wpDevConf);
 
-      assert.equal(webpackConfig.output.path, path.resolve(desiredOutputPath, '@rei', 'febs'));
+      assert.equal(webpackConfig[0].output.path, path.resolve(desiredOutputPath, '@rei', 'febs'));
     });
 
     it('should allow entry points to be changed', function () {
@@ -341,7 +346,7 @@ describe('FEBS Development Tests', function () {
         },
       }).getWebpackConfig(false)(wpDevConf);
 
-      assert(webpackConfig.entry.app[0].endsWith(desiredEntryPath));
+      assert(webpackConfig[0].entry.app[0].endsWith(desiredEntryPath));
     });
 
     describe('febsConfigMerge', function () {
@@ -486,7 +491,7 @@ describe('FEBS Development Tests', function () {
       assert(devServer instanceof FakeWDS);
 
       // Assert webpack compiler passed to FakeWDS
-      assert(devServer.compiler instanceof webpack.Compiler);
+      assert(devServer.compiler instanceof webpack.MultiCompiler);
     });
   });
 });
