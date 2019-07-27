@@ -105,7 +105,7 @@ describe('FEBS Development Tests', function () {
       });
     });
 
-    it.only('polyfills based on supported browsers (IE11)', async function () {
+    it('polyfills based on supported browsers (IE11)', async function () {
       const compiled = await compile(lib.createConf({
         entry: {
           app1: lib.absPath('fixtures/src/main-es-polyfill.js'),
