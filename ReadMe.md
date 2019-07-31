@@ -33,7 +33,7 @@ by checking out the introductory post on the [REI Co-op Engineering blog](https:
 
 #### Install the dependency
 
-`npm install --save @rei/febs` (`--global` switch optional)
+`npm install --save @rei/febs core-js@^3.1.x`
 
 #### Assign build tasks
 

@@ -115,14 +115,14 @@ describe('FEBS Development Tests', function () {
       // Object.assign
       assert(lib.compiledContains(compiled, {
         entryName: /app1/,
-        content: /es6.object.assign/,
+        content: /es.object.assign/,
         fileName: /\.js$/,
       }));
 
       // Promise
       assert(lib.compiledContains(compiled, {
         entryName: /app1/,
-        content: /es6.promise/,
+        content: /es.promise/,
         fileName: /\.js$/,
       }));
     });
