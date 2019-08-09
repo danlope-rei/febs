@@ -494,4 +494,23 @@ describe('FEBS Development Tests', function () {
       assert(devServer.compiler instanceof webpack.MultiCompiler);
     });
   });
+
+  describe('SSR Build', function () {
+    let febs;
+    before(function () {
+      febs = febsModule({}, {});
+    });
+
+    it('should be disabled on development builds', function () {
+      assert.ok(!febs.isSSR('development', {
+        ssr: true,
+      }));
+    });
+
+    it('should respect febs-config.ssr on prod build', function () {
+      assert.ok(!febs.isSSR('production', {
+        ssr: false,
+      }));
+    });
+  });
 });
