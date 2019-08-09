@@ -165,6 +165,7 @@ Notes:
 - Enabling this will add additional time to the build as it essentially needs to run 2 builds, one
 for the client and one for the server. Additionally, the generated  `vue-ssr-server-bundle.json` is very large.
 - This is automatically disabled during development builds, i.e., `febs dev`.
+- If, for some reason, you do need this enabled during `dev` build, set `resolve.symlinks` property in `webpack.overrides.conf.js`
 
 #### Example configuration output
 Given the above example, FEBS will generate two bundles at the following paths:
