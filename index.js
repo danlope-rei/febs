@@ -83,7 +83,15 @@ module.exports = function init(command, conf = {}) {
     return R.mergeRight(febsConfig, febsConfigFileJSON);
   });
 
-  const isSSR = () => getFebsConfig().ssr;
+  /**
+   * Determine if we are building SSR bundle.
+   * Note: In dev mode, we disable SSR as it is expensive (time and size) and
+   * slows down live-reloading.
+   * @param {String} buildEnv ("production" || "development")
+   * @param {Object} febsConfig
+   * @returns {boolean}
+   */
+  const isSSR = (buildEnv, febsConfig) => buildEnv !== 'development' && febsConfig.ssr;
 
   const getPackageName = () => {
     const projectPackageJson = path.join(projectPath, 'package.json');
@@ -313,9 +321,7 @@ module.exports = function init(command, conf = {}) {
    */
   const compile = function compile() {
     cleanDestDir();
-
-    // Create client-side bundle
-    runCompile(isSSR());
+    runCompile(isSSR(env, getFebsConfig()));
   };
 
   /**
@@ -336,5 +342,6 @@ module.exports = function init(command, conf = {}) {
     addVueSSRToWebpackConfig: addVueSSRConfigToConfigList,
     getWebpackConfigFn: getWebpackConfigsFn,
     febsConfigMerge,
+    isSSR,
   };
 };

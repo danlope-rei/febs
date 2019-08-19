@@ -476,7 +476,10 @@ describe('FEBS Development Tests', function () {
     });
 
     it('should create new server', function () {
-      const devServer = devServerFn(FakeWDS, () => {
+      const devServer = devServerFn(FakeWDS, {
+        compilers: [{
+          options: {},
+        }],
       });
       assert(devServer instanceof FakeWDS);
     });
@@ -490,8 +493,27 @@ describe('FEBS Development Tests', function () {
       const devServer = febs.startDevServerFn(FakeWDS)();
       assert(devServer instanceof FakeWDS);
 
-      // Assert webpack compiler passed to FakeWDS
+      // Assert webpack MultiCompiler passed to FakeWDS
       assert(devServer.compiler instanceof webpack.MultiCompiler);
+    });
+  });
+
+  describe('SSR Build', function () {
+    let febs;
+    before(function () {
+      febs = febsModule({}, {});
+    });
+
+    it('should be disabled on development builds', function () {
+      assert.ok(!febs.isSSR('development', {
+        ssr: true,
+      }));
+    });
+
+    it('should respect febs-config.ssr on prod build', function () {
+      assert.ok(!febs.isSSR('production', {
+        ssr: false,
+      }));
     });
   });
 });

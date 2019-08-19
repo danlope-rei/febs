@@ -133,14 +133,14 @@ Here is an example of `entry`/`output` paths using a typical `Java`/`Maven`-like
       }
       "output": {
         "path": "./target/classes/dist"
-      }
+      },
+      "ssr": true
     }
 
 Notes:
  - the `febs-config.json` overrides the `webpack.overrides.config.js` file. (i.e., if `entry` and `output` are specified in both, the build will use the entries in `febs-config.json`.
  - the `entry/output` paths are resolved relative to npm root.
  - the `output` path is appended with `<package name>`, i.e., `dist/details/`. Use the overrides file if you want to specify a unique path. 
- 
 ####  `entry` property
 
 In the `febs-config.json` example above, we are creating our own entry points instead of using the
@@ -155,6 +155,16 @@ In the `febs-config.json` example above we change the default output path to the
 Notes:
 - The `output` paths are specified relative to npm root directory.
 - the `output` path is appended with `<package name>`, i.e., `dist/<package name>/`. Use the overrides file if you want to specify a unique path. 
+
+#### `ssr` property
+
+This value determines whether or not to build the `vue-ssr-server-bundle.json` required
+for server-side rendering.
+
+Notes:
+- Enabling this will add additional time to the build as it essentially needs to run 2 builds, one
+for the client and one for the server. Additionally, the generated  `vue-ssr-server-bundle.json` is very large.
+- This is automatically disabled during development builds, i.e., `febs dev`.
 
 #### Example configuration output
 Given the above example, FEBS will generate two bundles at the following paths:
