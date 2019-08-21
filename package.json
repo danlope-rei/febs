@@ -7,8 +7,10 @@
     "test": "test"
   },
   "scripts": {
+    "preinstall": "./bin/preinstall.js",
     "init": "./bin/init",
-    "test:lib": "NODE_ENV=dev mocha -t 8000 test/lib-spec.js",
+    "test:test-lib": "mocha test/test-lib-spec.js",
+    "test:lib": "mocha test/lib-spec.js",
     "test:dev": "mocha -t 8000 test/index-dev-*spec.js",
     "test:css": "mocha -t 8000 test/index-dev-css-spec.js",
     "test:prod": "mocha -t 8000 test/index-prod-spec.js",
@@ -25,6 +27,9 @@
   },
   "bin": {
     "febs": "./bin/febs"
+  },
+  "engines": {
+    "node": ">=8.3.0"
   },
   "keywords": [],
   "license": "MIT",
