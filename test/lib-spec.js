@@ -2,86 +2,63 @@
 /* eslint-disable prefer-arrow-callback, func-names */
 
 const assert = require('assert');
-const lib = require('./lib');
-const logger = require('../lib/logger');
+const lib = require('../lib');
 
 describe('FEBS Lib Tests', function () {
-  let compile;
-
-  beforeEach(function () {
-    logger.setLogLevel('error'); // Suppress info messages
-    process.env.FEBS_TEST = true;
-    compile = lib.createCompileFn(lib.createFS(), 'development');
-  });
-
-  it('positively asserts against entryName, fileName, content', async function () {
-    const compiled = await compile(lib.createConf({
-      entry: {
-        app1: lib.absPath('fixtures/src/main-es2015.js'),
+  describe('checkVersion', function () {
+    const testCases = [
+      {
+        currentVersion: 'v8.0.0',
+        minVersion: '9.0.0',
+        expected: false,
+        message: 'Major min sad',
       },
-    }));
-
-    // .code.app1[0].content.includes('add:function')
-    assert(lib.compiledContains(compiled, {
-      entryName: /app1/,
-      fileName: /\.js$/,
-      content: /ction/,
-    }));
-  });
-
-  it('negatively asserts entryName', async function () {
-    const compiled = await compile(lib.createConf({
-      entry: {
-        app1: lib.absPath('fixtures/src/main-es2015.js'),
+      {
+        currentVersion: 'v8.0.0',
+        minVersion: '7.0.0',
+        expected: true,
+        message: 'Major min happy',
       },
-    }));
-
-    // .code.app1[0].content.includes('add:function')
-    assert(!lib.compiledContains(compiled, {
-      entryName: /apx/,
-      fileName: /\.js$/,
-      content: /ction/,
-    }));
-  });
-
-  it('negatively asserts content', async function () {
-    const compiled = await compile(lib.createConf({
-      entry: {
-        app1: lib.absPath('fixtures/src/main-es2015.js'),
+      {
+        currentVersion: 'v8.1.0',
+        minVersion: '8.0.0',
+        expected: true,
+        message: 'Minor min happy',
       },
-    }));
-
-    // .code.app1[0].content.includes('add:function')
-    assert(!lib.compiledContains(compiled, {
-      entryName: /app/,
-      fileName: /\.js$/,
-      content: /xtion/,
-    }));
-  });
-
-  it('matches filename only', async function () {
-    const compiled = await compile(lib.createConf({
-      entry: {
-        app1: lib.absPath('fixtures/src/main-es2015.js'),
+      {
+        currentVersion: 'v8.1.0',
+        minVersion: '8.2.0',
+        expected: false,
+        message: 'Minor min sad',
       },
-    }));
-
-    // .code.app1[0].content.includes('add:function')
-    assert(lib.compiledContains(compiled, {
-      fileName: /\.js$/,
-    }));
-  });
-
-  it('matches content only', async function () {
-    const compiled = await compile(lib.createConf({
-      entry: {
-        app1: lib.absPath('fixtures/src/main-es2015.js'),
+      {
+        currentVersion: 'v8.1.1',
+        minVersion: '8.1.0',
+        expected: true,
+        message: 'Patch min happy',
       },
-    }));
+      {
+        currentVersion: 'v8.1.0',
+        minVersion: '8.1.1',
+        expected: false,
+        message: 'Patch min sad',
+      },
+      {
+        currentVersion: 'v8.0.0',
+        minVersion: '8.0.0',
+        expected: true,
+        message: 'Equal happy',
+      },
+    ];
 
-    // .code.app1[0].content.includes('add:function')
-    assert(lib.compiledContains(compiled, {
-      content: /add/,
-    }));
+    it('should check current node version >= minimum node version', function () {
+      testCases.forEach((testCase) => {
+        assert.strictEqual(
+          lib.checkVersion(testCase.currentVersion, testCase.minVersion),
+          testCase.expected,
+          testCase.message
+        );
+      });
+    });
   });
 });
