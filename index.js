@@ -26,7 +26,7 @@ const projectPath = process.cwd();
 module.exports = function init(command, conf = {}) {
   const febsConfigArg = conf;
 
-  logger.info(`✅ Current node version: ${process.version}.`);
+  logger.info(`Current node version: ${process.version}.`);
 
   // Get the build environment. (prod | dev)
   const env = command.name
