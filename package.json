@@ -1,6 +1,6 @@
 {
   "name": "@rei/febs",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "REI's next-gen front-end build system.",
   "main": "index.js",
   "directories": {
@@ -30,7 +30,7 @@
   "license": "MIT",
   "repository": "https://github.com/rei/febs",
   "dependencies": {
-    "@rei/front-end-build-configs": "git+https://github.com/rei/front-end-build-configs.git#update-file-loader",
+    "@rei/front-end-build-configs": "^1.2.0",
     "commander": "^2.15.0",
     "core-js": "^3.1.4",
     "fs-extra": "^4.0.3",
