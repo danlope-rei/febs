@@ -104,7 +104,7 @@ module.exports = {
                   useBuiltIns: 'usage',
                   corejs: 2,
 
-                  modules: 'commonjs',
+                  modules: false,
 
                   // browserslist
                   targets: {
