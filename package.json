@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "preinstall": "./bin/preinstall.js",
+    "postinstall": "./bin/postinstall.js",
     "init": "./bin/init",
     "test:test-lib": "mocha test/test-lib-spec.js",
     "test:lib": "mocha test/lib-spec.js",
