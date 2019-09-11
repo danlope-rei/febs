@@ -7,7 +7,6 @@ const merge = require('webpack-merge');
 const fsExtra = require('fs-extra');
 const { baseConfigFn, ssrConfig } = require('@rei/front-end-build-configs').profiles.application;
 const logger = require('./lib/logger');
-const lib = require('./lib');
 const devServer = require('./lib/dev-server');
 
 const projectPath = process.cwd();
@@ -26,6 +25,8 @@ const projectPath = process.cwd();
  */
 module.exports = function init(command, conf = {}) {
   const febsConfigArg = conf;
+
+  logger.info(`Current node version: ${process.version}.`);
 
   // Get the build environment. (prod | dev)
   const env = command.name

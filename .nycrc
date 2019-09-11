@@ -1,0 +1,6 @@
+{
+  "exclude": [
+    "webpack.overrides.conf.js",
+    "**/*-spec.js"
+  ]
+}

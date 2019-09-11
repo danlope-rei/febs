@@ -29,6 +29,9 @@ by checking out the introductory post on the [REI Co-op Engineering blog](https:
 
 ## Getting Started
 
+### Prerequisites
+Confirm that you satisfy the [minimum node.js version](https://github.com/rei/febs/blob/master/package.json#L32).
+
 ### Install
 
 #### Install the dependency

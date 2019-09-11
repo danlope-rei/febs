@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-const febs = require('../index.js');
+
 const program = require('commander');
+const febs = require('../index.js');
 
 program
   .usage('[task] [options]')
