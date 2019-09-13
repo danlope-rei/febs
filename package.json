@@ -44,6 +44,7 @@
     "fs-extra": "^4.0.3",
     "memory-fs": "^0.4.1",
     "mocha": "^5.2.0",
+    "portfinder": "^1.0.23",
     "ramda": "^0.26.0",
     "semver": "^6.3.0",
     "webpack": "^4.35.3",
