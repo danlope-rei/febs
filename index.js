@@ -194,6 +194,12 @@ module.exports = function init(command, conf = {}) {
       entry: 'replace',
     };
 
+    // Check for --analyze flag to launch webpack-bundle
+    if (conf.analyze) {
+      const analyzeConfig = require('./webpack-config/webpack.analyzer.conf');
+      configsToMerge.push(analyzeConfig);
+    }
+
     // Overrides config.
     configsToMerge.push(getOverridesConf(confOverride));
 

@@ -13,9 +13,11 @@ program
 program
   .command('prod')
   .description('Builds front-end assets optimized for production\n')
+  .option('--analyze', 'Run webpack-bundle-analyzer on your compiled code')
   .action((command) => {
     febs(command, {
       logLevel: command.parent.verbose ? 'verbose' : 'info',
+      analyze: command.analyze,
     }).compile();
   });
 
