@@ -1,14 +1,13 @@
 {
   "name": "@rei/febs",
-  "version": "5.4.0",
+  "version": "5.4.2",
   "description": "REI's next-gen front-end build system.",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "postinstall": "./bin/postinstall.js",
-    "init": "./bin/init",
+    "postinstall": "node ./bin/postinstall.js",
     "test:test-lib": "mocha test/test-lib-spec.js",
     "test:lib": "mocha test/lib-spec.js",
     "test:dev": "mocha -t 8000 test/index-dev-*spec.js",
