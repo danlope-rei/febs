@@ -116,6 +116,8 @@ FEBS provides a simple command-line interface.
     febs dev -no-dev-server
     febs dev --no-dev-server --watch
 
+Unless `no-dev-server` is specified, `febs` will use `webpack-dev-server` to create an `express` server on port `8080`. If that port is already in use, an open port will be found and displayed in the terminal.
+
 ### FEBS Configuration
 
 If the default entry/output paths don't work for you, you can specify them by using a `febs-config.json` file next to your package.json that is using `febs`.
