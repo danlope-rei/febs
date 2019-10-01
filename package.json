@@ -1,6 +1,6 @@
 {
   "name": "@rei/febs",
-  "version": "5.4.2",
+  "version": "5.5.0",
   "description": "REI's next-gen front-end build system.",
   "main": "index.js",
   "directories": {
@@ -43,6 +43,7 @@
     "fs-extra": "^4.0.3",
     "memory-fs": "^0.4.1",
     "mocha": "^5.2.0",
+    "portfinder": "^1.0.23",
     "ramda": "^0.26.0",
     "semver": "^6.3.0",
     "webpack": "^4.35.3",
